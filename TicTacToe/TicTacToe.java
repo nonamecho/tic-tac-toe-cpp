@@ -1,7 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Collections;
 
 class TicTacToe {
     static int gridSizeLowLimit = 3;
@@ -15,9 +14,9 @@ class TicTacToe {
     public TicTacToe(int gridSize, int accToWinSize){
         this.gridSize = gridSize;
         this.accToWinSize = accToWinSize;
-        this.placeCount = 0;
-        this.grid = new Chess[gridSize][gridSize];
-        this.currentTurn = Chess.O;
+        placeCount = 0;
+        grid = new Chess[gridSize][gridSize];
+        currentTurn = Chess.O;
     }
 
     public Boolean checkWin(int row, int column){
@@ -25,22 +24,22 @@ class TicTacToe {
         int colAcc = 0;
         int diagAcc = 0;
         int antiDiagAcc = 0;
-        for(int checkNum = 0; checkNum < this.gridSize; checkNum++){
-            if(this.grid[row][checkNum] == this.currentTurn){
+        for(int checkNum = 0; checkNum < gridSize; checkNum++){
+            if(grid[row][checkNum] == currentTurn){
                 rowAcc++;
             }
-            if(this.grid[checkNum][column] == this.currentTurn){
+            if(grid[checkNum][column] == currentTurn){
                 colAcc++;
             }
-            if(this.grid[checkNum][checkNum] == this.currentTurn){
+            if(grid[checkNum][checkNum] == currentTurn){
                 diagAcc++;
             }
-            if(this.grid[checkNum][this.gridSize - 1 -checkNum] == this.currentTurn){
+            if(grid[checkNum][gridSize - 1 -checkNum] == currentTurn){
                 antiDiagAcc++;
             }
      
-            if(checkNum == this.gridSize - 1){
-                if(rowAcc>=this.accToWinSize || colAcc>=this.accToWinSize || diagAcc>=this.accToWinSize || antiDiagAcc>=this.accToWinSize){
+            if(checkNum == gridSize - 1){
+                if(rowAcc>=accToWinSize || colAcc>=accToWinSize || diagAcc>=accToWinSize || antiDiagAcc>=accToWinSize){
                     return true;
                 }
             }
@@ -49,30 +48,30 @@ class TicTacToe {
     }
 
     public void changePlayer(){
-        if(this.currentTurn == Chess.O){
-            this.currentTurn = Chess.X;
+        if(currentTurn == Chess.O){
+            currentTurn = Chess.X;
         }
         else{
-            this.currentTurn = Chess.O;
+            currentTurn = Chess.O;
         }
     }
 
     public void drawGrid(){
-        for (int i = 0; i < this.gridSize; i++){
-            for(int j = 0; j < this.gridSize; j++){
-                if(this.grid[i][j]!= null){
-                    Utils.printChessWithEmptySpace(this.grid[i][j].toString(), 3);
+        for (int i = 0; i < gridSize; i++){
+            for(int j = 0; j < gridSize; j++){
+                if(grid[i][j]!= null){
+                    Utils.printChessWithEmptySpace(grid[i][j].toString(), 3);
                 }else{
                     Utils.printChessWithEmptySpace(Integer.toString(Utils.rowAndColToPlacement(i, j, gridSize)), 3);
                 }
                 
-                if(j != this.grid[i].length-1){
+                if(j != grid[i].length-1){
                     Utils.printContentNTimes("|",1, false);
             }
             }
             Utils.printContentNTimes("",1, true);
-            if(i != this.gridSize-1){
-                Utils.printContentNTimes("----", this.gridSize, true);
+            if(i != gridSize-1){
+                Utils.printContentNTimes("----", gridSize, true);
             }
         }
     }
@@ -91,11 +90,11 @@ class TicTacToe {
                     continue;
                 }else{
                     int[] rowAndCol = Utils.placementToRowAndCol(placement, gridSize);
-                    if(this.grid[rowAndCol[0]][rowAndCol[1]] != null){
+                    if(grid[rowAndCol[0]][rowAndCol[1]] != null){
                         System.out.println("***Not available!");
                         continue;
                     }else{
-                        this.grid[rowAndCol[0]][rowAndCol[1]] = currentTurn; 
+                        grid[rowAndCol[0]][rowAndCol[1]] = currentTurn; 
                         placeCount++;
                         drawGrid();
 
