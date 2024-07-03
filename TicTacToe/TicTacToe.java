@@ -9,6 +9,8 @@ enum Chess {
 }
 
 class TicTacToe {
+    static int gridSizeLowLimit = 3;
+    static int gridSizeHighLimit = 10;
     int gridSize;
     int accToWinSize;
     Chess[][] grid;
@@ -69,7 +71,7 @@ class TicTacToe {
         }
     }
 
-    public Boolean placeChess(int row, int column, String choiceInString){
+    public Boolean placeChess(int row, int column){
         if(this.grid[row][column] != null){
             return false;
         }else{
@@ -83,24 +85,27 @@ class TicTacToe {
         for (int i = 0; i < this.gridSize; i++){
             for(int j = 0; j < this.gridSize; j++){
                 int num = i*this.gridSize+j+1;
-                System.out.print(" ");
+                System.out.print("  ");
                 if(this.grid[i][j]!= null){
-                    System.out.print(" " + this.grid[i][j]);
+                    System.out.print("" + this.grid[i][j] + " ");
                 }else{
-                     if(num<10){
+                     if(num<100){
                         System.out.print(" ");
                     }
                     System.out.print(num);
+                    if(num<10){
+                        System.out.print(" ");
+                    }
                 }
                 
-                System.out.print(" ");
+                System.out.print("  ");
                 if(j != this.grid[i].length-1){
                 System.out.print("|");
             }
             }
             System.out.println("");
             if(i != this.grid.length-1){
-                System.out.println(String.join("", Collections.nCopies(this.grid.length, "-----")));
+                System.out.println(String.join("", Collections.nCopies(this.grid.length, "--------")));
             }
         }
     }
@@ -108,27 +113,56 @@ class TicTacToe {
 }
 
 class Main{
-     public static void main(String[] args) throws IOException {
+    public static int chooseGridSize()throws IOException{
+        while(true){
+            System.out.println("please input a grid size (" + TicTacToe.gridSizeLowLimit + " - " + TicTacToe.gridSizeHighLimit + ")");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            String input = reader.readLine();
+            try{
+                int output = Integer.parseInt(input);
+                if(output < TicTacToe.gridSizeLowLimit || output > TicTacToe.gridSizeHighLimit){
+                    System.out.println("***Out of range");
+                    continue;
+                }
+                return output;
+            }catch(NumberFormatException e){
+                System.out.println("***Invalid input");
+                continue;
+            } 
+        }
+    }
+
+    public static int chooseAccToWinSize(int gridSize) throws IOException{
+        while(true){
+            System.out.println("please input a accumulate to win size (within " + TicTacToe.gridSizeLowLimit + " and grid size)");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            String input = reader.readLine();
+            try{
+                int output = Integer.parseInt(input);
+                if(output < TicTacToe.gridSizeLowLimit || output > gridSize){
+                    System.out.println("***Out of range");
+                    continue;
+                }
+                return output;
+            }catch(NumberFormatException e){
+                System.out.println("***Invalid input");
+                continue;
+            } 
+        }
+    }
+     public static void main(String[] args) throws IOException  {
+        
         // greeting
         System.out.println("Welcome to Tic Tac Toe!"); 
-        
+
         // Choose grid size
-        System.out.println("please input a grid size (0-10)");
+        int gridSize = chooseGridSize();
 
-        BufferedReader gridSizeReader = new BufferedReader(new InputStreamReader(System.in));
-        String gridSizeInString = gridSizeReader.readLine();
-        int gridSize = Integer.parseInt(gridSizeInString);
+         // Choose acc to win size
+        int accToWinSize = chooseAccToWinSize(gridSize);
 
-        // Choose acc to win size
-        System.out.println("please input a accumulate to win size (within grid size)");
-
-        BufferedReader accToWinSizeReader = new BufferedReader(new InputStreamReader(System.in));
-        String accToWinSizeInString = accToWinSizeReader.readLine();
-        int accToWinSize = Integer.parseInt(accToWinSizeInString);
-
+        // Start new game
         TicTacToe game = new TicTacToe(gridSize, accToWinSize);
-
-        // draw grid
         game.drawGrid();
 
         while(true){
@@ -155,7 +189,7 @@ class Main{
             }
         }
 
-        if(!game.placeChess(row, column, choiceInString)){
+        if(!game.placeChess(row, column)){
             System.out.println("***Not available!");
             continue;
         }
