@@ -5,27 +5,27 @@ import java.io.InputStreamReader;
 class TicTacToe {
     public static final int GRID_SIZE_LOW = 3;
     public static final int GRID_SIZE_HIGH = 10;
-    private int gridSize;
-    private int accToWinSize;
-    private int placeCount;
-    private Chess[][] grid;
-    private Chess currentTurn;
+    public int gridSize;
+    public int accToWinSize;
+    public int placeCount;
+    public Chess[][] grid;
+    public Chess player;
 
-    private void init(int gridSize, int accToWinSize){
+    public void init(int gridSize, int accToWinSize, Chess[][] grid, Chess player){
         this.gridSize = gridSize;
         this.accToWinSize = accToWinSize;
-        placeCount = 0;
-        grid = new Chess[gridSize][gridSize];
-        currentTurn = Chess.O;
+        this.grid = grid;
+        this.player = player;
+        placeCount = Utils.getPlaceCount(grid);
     }
 
-    private boolean checkWin(int row, int column){
+    public boolean checkWin(int row, int column){
         int rowAcc = 0;
         int colAcc = 0;
         int diagAcc = 0;
         int antiDiagAcc = 0;
         for(int checkNum = 0; checkNum < gridSize; checkNum++){
-            if(grid[row][checkNum] == currentTurn){
+            if(grid[row][checkNum] == player){
                 rowAcc++;
                 if(rowAcc==accToWinSize){
                     return true;
@@ -33,7 +33,7 @@ class TicTacToe {
             }else{
                 rowAcc = 0;
             }
-            if(grid[checkNum][column] == currentTurn){
+            if(grid[checkNum][column] == player){
                 colAcc++;
                 if(colAcc==accToWinSize){
                     return true;
@@ -41,7 +41,7 @@ class TicTacToe {
             }else{
                 colAcc = 0;
             }
-            if(grid[checkNum][checkNum] == currentTurn){
+            if(grid[checkNum][checkNum] == player){
                 diagAcc++;
                 if(diagAcc==accToWinSize){
                     return true;
@@ -49,7 +49,7 @@ class TicTacToe {
             }else{
                 diagAcc = 0;
             }
-            if(grid[checkNum][gridSize - 1 -checkNum] == currentTurn){
+            if(grid[checkNum][gridSize - 1 -checkNum] == player){
                 antiDiagAcc++;
                 if(antiDiagAcc==accToWinSize){
                     return true;
@@ -61,12 +61,12 @@ class TicTacToe {
         return false;
     }
 
-    private void togglePlayer(){
-        currentTurn = currentTurn == Chess.O? Chess.X: Chess.O;
+    public void togglePlayer(){
+        player = player == Chess.O? Chess.X: Chess.O;
     }
 
-    private void placeChess(int row, int column){
-        grid[row][column] = currentTurn; 
+    public void placeChess(int row, int column){
+        grid[row][column] = player; 
         placeCount++;
     }
 
@@ -92,12 +92,12 @@ class TicTacToe {
 
     public void play(int gridSize, int accToWinSize) throws IOException{
         // Preparation
-        init(gridSize, accToWinSize);
+        init(gridSize, accToWinSize, new Chess[gridSize][gridSize], Chess.O);
         drawGrid();
 
         // Play game
         while (true) {
-            System.out.println("Now is " + currentTurn + " turn. Please choose the avilable number on grid");
+            System.out.println("Now is " + player + " turn. Please choose the avilable number on grid");
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             String input = reader.readLine();
             try{
@@ -115,7 +115,7 @@ class TicTacToe {
                         drawGrid();
 
                         if(checkWin(rowAndCol[0], rowAndCol[1])){
-                            System.out.println("Player " + currentTurn + " win!");
+                            System.out.println("Player " + player + " win!");
                             break;
                         }else if(placeCount == gridSize * gridSize){
                             System.out.println("Draw game!");

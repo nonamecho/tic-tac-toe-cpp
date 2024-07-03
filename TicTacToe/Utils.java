@@ -36,4 +36,16 @@ public class Utils {
         printContentNTimes(" ", space - content.length(), false);
         System.out.print(content);
     }
+
+    public static int getPlaceCount(Chess[][]grid){
+        int counter = 0;
+        for(int i = 0; i < grid.length; i++){
+            for (int j = 0; j < grid.length; j++){
+                if(grid[i][j]!=null){
+                    counter++;
+                }
+            }
+        }
+        return counter;
+    }
 }
