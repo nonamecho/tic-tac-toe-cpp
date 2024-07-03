@@ -27,29 +27,35 @@ class TicTacToe {
         for(int checkNum = 0; checkNum < gridSize; checkNum++){
             if(grid[row][checkNum] == currentTurn){
                 rowAcc++;
+                if(rowAcc==accToWinSize){
+                    return true;
+                }
             }else{
                 rowAcc = 0;
             }
             if(grid[checkNum][column] == currentTurn){
                 colAcc++;
+                if(colAcc==accToWinSize){
+                    return true;
+                }
             }else{
                 colAcc = 0;
             }
             if(grid[checkNum][checkNum] == currentTurn){
                 diagAcc++;
+                if(diagAcc==accToWinSize){
+                    return true;
+                }
             }else{
                 diagAcc = 0;
             }
             if(grid[checkNum][gridSize - 1 -checkNum] == currentTurn){
                 antiDiagAcc++;
-            }else{
-                antiDiagAcc = 0;
-            }
-     
-            if(checkNum == gridSize - 1){
-                if(rowAcc>=accToWinSize || colAcc>=accToWinSize || diagAcc>=accToWinSize || antiDiagAcc>=accToWinSize){
+                if(antiDiagAcc==accToWinSize){
                     return true;
                 }
+            }else{
+                antiDiagAcc = 0;
             }
         }
         return false;
