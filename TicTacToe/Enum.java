@@ -1,0 +1,4 @@
+enum Chess {
+    X,
+    O
+}
