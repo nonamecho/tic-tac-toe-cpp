@@ -58,6 +58,9 @@ class Main{
     }
     
     public static void main(String[] args) throws IOException  {        
+        // Create the game object
+        TicTacToe game = new TicTacToe();
+
         // greeting
         System.out.println("Welcome to Tic Tac Toe!"); 
 
@@ -69,8 +72,7 @@ class Main{
         int accToWinSize = chooseAccToWinSize(gridSize);
 
         // Start new game
-        TicTacToe game = new TicTacToe(gridSize, accToWinSize);
-        game.play();
+        game.play(gridSize, accToWinSize);
 
         // Ask play again
         if(!choosePlayAgain()){

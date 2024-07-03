@@ -11,7 +11,7 @@ class TicTacToe {
     Chess[][] grid;
     Chess currentTurn;
 
-    public TicTacToe(int gridSize, int accToWinSize){
+    public void init(int gridSize, int accToWinSize){
         this.gridSize = gridSize;
         this.accToWinSize = accToWinSize;
         placeCount = 0;
@@ -76,9 +76,12 @@ class TicTacToe {
         }
     }
 
-    public void play() throws IOException{
+    public void play(int gridSize, int accToWinSize) throws IOException{
+        // Preparation
+        init(gridSize, accToWinSize);
         drawGrid();
 
+        // Play game
         while (true) {
             System.out.println("Now is " + currentTurn + " turn. Please choose the avilable number on grid");
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -94,6 +97,7 @@ class TicTacToe {
                         System.out.println("***Not available!");
                         continue;
                     }else{
+                        // Place Chess
                         grid[rowAndCol[0]][rowAndCol[1]] = currentTurn; 
                         placeCount++;
                         drawGrid();
