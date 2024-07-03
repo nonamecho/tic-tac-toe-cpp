@@ -3,15 +3,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 class TicTacToe {
-    static int gridSizeLowLimit = 3;
-    static int gridSizeHighLimit = 10;
-    int gridSize;
-    int accToWinSize;
-    int placeCount;
-    Chess[][] grid;
-    Chess currentTurn;
+    public static int gridSizeLowLimit = 3;
+    public static int gridSizeHighLimit = 10;
+    private int gridSize;
+    private int accToWinSize;
+    private int placeCount;
+    private Chess[][] grid;
+    private Chess currentTurn;
 
-    public void init(int gridSize, int accToWinSize){
+    private void init(int gridSize, int accToWinSize){
         this.gridSize = gridSize;
         this.accToWinSize = accToWinSize;
         placeCount = 0;
@@ -19,7 +19,7 @@ class TicTacToe {
         currentTurn = Chess.O;
     }
 
-    public Boolean checkWin(int row, int column){
+    private Boolean checkWin(int row, int column){
         int rowAcc = 0;
         int colAcc = 0;
         int diagAcc = 0;
@@ -27,15 +27,23 @@ class TicTacToe {
         for(int checkNum = 0; checkNum < gridSize; checkNum++){
             if(grid[row][checkNum] == currentTurn){
                 rowAcc++;
+            }else{
+                rowAcc = 0;
             }
             if(grid[checkNum][column] == currentTurn){
                 colAcc++;
+            }else{
+                colAcc = 0;
             }
             if(grid[checkNum][checkNum] == currentTurn){
                 diagAcc++;
+            }else{
+                diagAcc = 0;
             }
             if(grid[checkNum][gridSize - 1 -checkNum] == currentTurn){
                 antiDiagAcc++;
+            }else{
+                antiDiagAcc = 0;
             }
      
             if(checkNum == gridSize - 1){
@@ -47,7 +55,7 @@ class TicTacToe {
         return false;
     }
 
-    public void changePlayer(){
+    private void changePlayer(){
         if(currentTurn == Chess.O){
             currentTurn = Chess.X;
         }
@@ -56,7 +64,7 @@ class TicTacToe {
         }
     }
 
-    public void drawGrid(){
+    private void drawGrid(){
         for (int i = 0; i < gridSize; i++){
             for(int j = 0; j < gridSize; j++){
                 if(grid[i][j]!= null){
