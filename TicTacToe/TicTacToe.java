@@ -3,8 +3,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 class TicTacToe {
-    public static int gridSizeLowLimit = 3;
-    public static int gridSizeHighLimit = 10;
+    public static final int GRID_SIZE_LOW = 3;
+    public static final int GRID_SIZE_HIGH = 10;
     private int gridSize;
     private int accToWinSize;
     private int placeCount;
@@ -19,7 +19,7 @@ class TicTacToe {
         currentTurn = Chess.O;
     }
 
-    private Boolean checkWin(int row, int column){
+    private boolean checkWin(int row, int column){
         int rowAcc = 0;
         int colAcc = 0;
         int diagAcc = 0;
@@ -61,13 +61,13 @@ class TicTacToe {
         return false;
     }
 
-    private void changePlayer(){
-        if(currentTurn == Chess.O){
-            currentTurn = Chess.X;
-        }
-        else{
-            currentTurn = Chess.O;
-        }
+    private void togglePlayer(){
+        currentTurn = currentTurn == Chess.O? Chess.X: Chess.O;
+    }
+
+    private void placeChess(int row, int column){
+        grid[row][column] = currentTurn; 
+        placeCount++;
     }
 
     private void drawGrid(){
@@ -111,19 +111,17 @@ class TicTacToe {
                         System.out.println("***Not available!");
                         continue;
                     }else{
-                        // Place Chess
-                        grid[rowAndCol[0]][rowAndCol[1]] = currentTurn; 
-                        placeCount++;
+                        placeChess(rowAndCol[0],rowAndCol[1]);
                         drawGrid();
 
                         if(checkWin(rowAndCol[0], rowAndCol[1])){
                             System.out.println("Player " + currentTurn + " win!");
                             break;
-                        }else if(placeCount == gridSize* gridSize){
+                        }else if(placeCount == gridSize * gridSize){
                             System.out.println("Draw game!");
                             break;
                         }else{
-                            changePlayer();
+                            togglePlayer();
                         }
                     }
                 }

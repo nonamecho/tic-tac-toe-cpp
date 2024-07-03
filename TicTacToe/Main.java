@@ -5,12 +5,12 @@ import java.io.InputStreamReader;
 class Main{
     public static int chooseGridSize()throws IOException{
         while(true){
-            System.out.println("please input a grid size (" + TicTacToe.gridSizeLowLimit + " - " + TicTacToe.gridSizeHighLimit + ")");
+            System.out.println("please input a grid size (" + TicTacToe.GRID_SIZE_LOW + " - " + TicTacToe.GRID_SIZE_HIGH + ")");
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             String input = reader.readLine();
             try{
                 int output = Integer.parseInt(input);
-                if(output < TicTacToe.gridSizeLowLimit || output > TicTacToe.gridSizeHighLimit){
+                if(output < TicTacToe.GRID_SIZE_LOW || output > TicTacToe.GRID_SIZE_HIGH){
                     System.out.println("***Out of range");
                     continue;
                 }
@@ -24,12 +24,12 @@ class Main{
 
     public static int chooseAccToWinSize(int gridSize) throws IOException{
         while(true){
-            System.out.println("please input a accumulate to win size (within " + TicTacToe.gridSizeLowLimit + " and grid size)");
+            System.out.println("please input a accumulate to win size (within " + TicTacToe.GRID_SIZE_LOW + " and grid size)");
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             String input = reader.readLine();
             try{
                 int output = Integer.parseInt(input);
-                if(output < TicTacToe.gridSizeLowLimit || output > gridSize){
+                if(output < TicTacToe.GRID_SIZE_LOW || output > gridSize){
                     System.out.println("***Out of range");
                     continue;
                 }
