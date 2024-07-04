@@ -2,7 +2,7 @@ import java.io.IOException;
 
 class TicTacToe {
     public static final int GRID_SIZE_LOW = 3;
-    public static final int GRID_SIZE_HIGH = 4;
+    public static final int GRID_SIZE_HIGH = 5;
     public int gridSize;
     public int accToWinSize;
     public int placeCount;
@@ -66,6 +66,11 @@ class TicTacToe {
     public void placeChess(int row, int column){
         grid[row][column] = player; 
         placeCount++;
+    }
+
+    public void removeChess(int row, int column){
+        grid[row][column] = null;
+        placeCount--;
     }
 
     public void drawGrid(){

@@ -3,20 +3,18 @@ public class MinMaxPlayer {
     private TicTacToe cloneGame;
     private int[][] accMarks;
 
-    private void minMax(int checkDepth, TicTacToe evaluateGame, int masterRow, int masterColumn){ 
+    private void minMax(TicTacToe evaluateGame, int checkDepth, int masterRow, int masterColumn){ 
         TicTacToe cloneEvaluateGame = new TicTacToe();
-        cloneEvaluateGame = new TicTacToe();
         cloneEvaluateGame.init(evaluateGame.gridSize, evaluateGame.gridSize, Utils.deepCloneGrid(evaluateGame.grid), evaluateGame.player);
+        
         outerloop:
         for(int i = 0; i < cloneGame.gridSize; i++){
             for(int j = 0; j < cloneGame.gridSize; j++){
                 if(cloneEvaluateGame.grid[i][j]==null){
-                    TicTacToe tempGame = new TicTacToe();
-                    tempGame.init(cloneEvaluateGame.gridSize, cloneEvaluateGame.accToWinSize, Utils.deepCloneGrid(cloneEvaluateGame.grid), cloneEvaluateGame.player);
-                    tempGame.placeChess(i, j);
-                    boolean isWin = tempGame.checkWin(i, j);
+                    cloneEvaluateGame.placeChess(i, j);
+                    boolean isWin = cloneEvaluateGame.checkWin(i, j);
                     if(isWin){
-                        if(tempGame.player == cloneGame.player){
+                        if(cloneEvaluateGame.player == cloneGame.player){
                             if(checkDepth == 0){
                                 accMarks[i][j] = accMarks[i][j] + 1;
                             }else{
@@ -38,14 +36,15 @@ public class MinMaxPlayer {
                     
                     if(checkDepth<MAX_DEPTH){
                         int newDepth = checkDepth + 1;
-                        tempGame.player = tempGame.player==Chess.O?Chess.X:Chess.O;
+                        cloneEvaluateGame.togglePlayer();
                         if(checkDepth==0){
-                            minMax(newDepth, tempGame, i, j);
+                            minMax(cloneEvaluateGame, newDepth, i, j);
                         }else{
-                            minMax(newDepth, tempGame, masterRow, masterColumn);
+                            minMax(cloneEvaluateGame, newDepth, masterRow, masterColumn);
                         }
-                        
+                        cloneEvaluateGame.togglePlayer();
                     }
+                    cloneEvaluateGame.removeChess(i, j);
                 }
             }
         }
@@ -58,7 +57,7 @@ public class MinMaxPlayer {
         this.accMarks = new int[game.gridSize][game.gridSize];
 
         // Run mini max algorithm for each layer and cases, accumalate the marks
-        minMax( 0, game, -1, -1);
+        minMax( game, 0, -1, -1);
 
         // Find the best move by the accumalated marks
         int[] bestMove = {-1, -1};
