@@ -3,6 +3,21 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 class Main{
+    public static PlayMode choosePlayMode() throws IOException{
+        while(true){
+            System.out.println("Single player or two players? (1/2)");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            String input = reader.readLine().toLowerCase();
+
+            if(input.equals("1")){
+                return PlayMode.SINGLE_PLAYER;
+            }else if(input.equals("2")){
+                return PlayMode.TWO_PLAYERS;
+            }else{
+                System.out.println("***Invlid input");
+            }
+        }
+    }
     public static int chooseGridSize()throws IOException{
         while(true){
             System.out.println("please input a grid size (" + TicTacToe.GRID_SIZE_LOW + " - " + TicTacToe.GRID_SIZE_HIGH + ")");
@@ -57,7 +72,7 @@ class Main{
         }
     }
     
-    public static void main(String[] args) throws IOException  {        
+    public static void main(String[] args) throws IOException, InterruptedException  {        
         // Create the game object
         TicTacToe game = new TicTacToe();
 
@@ -65,6 +80,9 @@ class Main{
         System.out.println("Welcome to Tic Tac Toe!"); 
 
         while (true) {
+        // Choose play mode
+        PlayMode playMode = choosePlayMode();
+
         // Choose grid size
         int gridSize = chooseGridSize();
 
@@ -78,38 +96,46 @@ class Main{
  
          // Play game
          while (true) {
-             System.out.println("Now is " + game.player + " turn. Please choose the avilable number on grid");
-             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-             String input = reader.readLine();
-             try{
-                 int placement = Integer.parseInt(input);
-                 if(placement < 1 || placement > gridSize * gridSize){
-                     System.out.println("***Out of range!");
-                     continue;
-                 }else{
-                     int[] rowAndCol = Utils.placementToRowAndCol(placement, gridSize);
-                     if(game.grid[rowAndCol[0]][rowAndCol[1]] != null){
-                         System.out.println("***Not available!");
-                         continue;
-                     }else{
-                         game.placeChess(rowAndCol[0],rowAndCol[1]);
-                         game.drawGrid();
- 
-                         if(game.checkWin(rowAndCol[0], rowAndCol[1])){
-                             System.out.println("Player " + game.player + " win!");
-                             break;
-                         }else if(game.placeCount == gridSize * gridSize){
-                             System.out.println("Draw game!");
-                             break;
-                         }else{
-                             game.togglePlayer();
-                         }
-                     }
-                 }
-             }catch(NumberFormatException e){
-                 System.out.println("***Invalid input");
-                 continue;
-             }
+            int[] rowAndCol;
+            if(playMode == PlayMode.SINGLE_PLAYER && game.player == Chess.X){
+                System.out.println("Now is Computer(X) turn. Please wait...");
+                MinMaxPlayer minMaxPlayer = new MinMaxPlayer();
+                rowAndCol = minMaxPlayer.getBestPlacement(game);
+            }else{
+                System.out.println("Now is " + game.player + " turn. Please choose the avilable number on grid");
+                BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                String input = reader.readLine();
+                try{
+                    int placement = Integer.parseInt(input);
+                    if(placement < 1 || placement > gridSize * gridSize){
+                        System.out.println("***Out of range!");
+                        continue;
+                    }else{
+                        rowAndCol = Utils.placementToRowAndCol(placement, gridSize);
+                        if(game.grid[rowAndCol[0]][rowAndCol[1]] != null){
+                            System.out.println("***Not available!");
+                            continue;
+                        }
+                    }
+                }catch(NumberFormatException e){
+                    System.out.println("***Invalid input");
+                    continue;
+                }
+               
+            }
+            game.placeChess(rowAndCol[0],rowAndCol[1]);
+            game.drawGrid();
+
+            if(game.checkWin(rowAndCol[0], rowAndCol[1])){
+                System.out.println("Player " + game.player + " win!");
+                break;
+            }else if(game.placeCount == gridSize * gridSize){
+                System.out.println("Draw game!");
+                break;
+            }else{
+                game.togglePlayer();
+            }
+
              
          }
 

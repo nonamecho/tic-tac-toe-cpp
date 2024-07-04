@@ -1,10 +1,8 @@
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 class TicTacToe {
     public static final int GRID_SIZE_LOW = 3;
-    public static final int GRID_SIZE_HIGH = 10;
+    public static final int GRID_SIZE_HIGH = 4;
     public int gridSize;
     public int accToWinSize;
     public int placeCount;
