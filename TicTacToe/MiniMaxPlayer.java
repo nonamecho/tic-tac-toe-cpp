@@ -4,50 +4,55 @@ public class MiniMaxPlayer {
     private Chess player;
     private int[][] accMarks;
 
-    private void miniMax(TicTacToe evaluateGame, int checkDepth, int masterRow, int masterColumn){ 
+    private boolean evaluate(TicTacToe game, int depth, int row, int column, int masterRow, int masterColumn){
+        if(game.grid[row][column]==null){
+            game.placeChess(row, column);
+    
+            boolean isDraw = game.checkDraw();
+            if(isDraw) return false;
+
+            boolean isWin = game.checkWin(row, column);
+            if(!isWin){
+                if(depth<MAX_DEPTH){
+                    game.togglePlayer(); // temp toggle player for passing to recursive miniMax to next level
+                    miniMax(game, depth+1, masterRow, masterColumn);
+                    game.togglePlayer(); // toggle back player
+                }
+                game.removeChess(row, column); // remove placed chess for next evaluation in same level
+                return true;
+            } 
+
+            if(game.player == player){
+                accMarks[masterRow][masterColumn] = accMarks[masterRow][masterColumn] + 1;
+            }else{
+                accMarks[masterRow][masterColumn] = accMarks[masterRow][masterColumn] - 1;
+            }
+
+            return false;
+        }
+        return true;
+    }
+
+    private void miniMax(TicTacToe evaluateGame, int depth, int masterRow, int masterColumn){ 
         TicTacToe cloneEvaluateGame = new TicTacToe();
         cloneEvaluateGame.init(evaluateGame.gridSize, evaluateGame.gridSize, Utils.deepCloneGrid(evaluateGame.grid), evaluateGame.player);
-        
         
         outerloop:
         for(int i = 0; i < gridSize; i++){
             for(int j = 0; j < gridSize; j++){
                 if(cloneEvaluateGame.grid[i][j]==null){
-                    cloneEvaluateGame.placeChess(i, j);
-                    boolean isWin = cloneEvaluateGame.checkWin(i, j);
-                    boolean isDraw = cloneEvaluateGame.checkDraw();
-                    if(isWin){
-                        if(cloneEvaluateGame.player == player){
-                            if(checkDepth == 0){
-                                accMarks[i][j] = accMarks[i][j] + 1;
-                            }else{
-                                accMarks[masterRow][masterColumn] = accMarks[masterRow][masterColumn] + 1;
-                            }
-                        }else{
-                            if(checkDepth == 0){
-                                accMarks[i][j] = accMarks[i][j] - 1;
-                            }else{
-                                accMarks[masterRow][masterColumn] = accMarks[masterRow][masterColumn] - 1;
+                    boolean evaluateResult;
 
-                            }
-                        }
-                        break outerloop;
+                    if(depth==0){
+                        evaluateResult = evaluate(cloneEvaluateGame, depth, i, j, i, j);
+                    }else{
+                        evaluateResult = evaluate(cloneEvaluateGame, depth, i, j, masterRow, masterColumn);
                     }
-                    if(checkDepth>MAX_DEPTH || isDraw){
+                   
+                    if(depth>MAX_DEPTH || !evaluateResult){
                         break outerloop;
                     }
                     
-                    if(checkDepth<MAX_DEPTH){
-                        int newDepth = checkDepth + 1;
-                        cloneEvaluateGame.togglePlayer();
-                        if(checkDepth == 0){
-                            miniMax(cloneEvaluateGame, newDepth, i, j);
-                        }else{
-                            miniMax(cloneEvaluateGame, newDepth, masterRow, masterColumn);
-                        }
-                        cloneEvaluateGame.togglePlayer();
-                    }
-                    cloneEvaluateGame.removeChess(i, j);
                 }
             }
         }
