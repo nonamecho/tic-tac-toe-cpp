@@ -1,5 +1,5 @@
 public class MiniMaxPlayer {
-    private static final int MAX_DEPTH = 6;
+    private static final int MAX_DEPTH = 5;
     private int gridSize;
     private Chess player;
     private int[][] accMarks;
@@ -15,6 +15,7 @@ public class MiniMaxPlayer {
                 if(cloneEvaluateGame.grid[i][j]==null){
                     cloneEvaluateGame.placeChess(i, j);
                     boolean isWin = cloneEvaluateGame.checkWin(i, j);
+                    boolean isDraw = cloneEvaluateGame.checkDraw();
                     if(isWin){
                         if(cloneEvaluateGame.player == player){
                             if(checkDepth == 0){
@@ -32,7 +33,7 @@ public class MiniMaxPlayer {
                         }
                         break outerloop;
                     }
-                    if(checkDepth>MAX_DEPTH){
+                    if(checkDepth>MAX_DEPTH || isDraw){
                         break outerloop;
                     }
                     
@@ -50,10 +51,9 @@ public class MiniMaxPlayer {
                 }
             }
         }
-       
     }
-    
-    public int[] getBestPlacement(TicTacToe game){
+
+    public int[] getBestMove(TicTacToe game){
         this.gridSize = game.gridSize;
         this.player = game.player;
         this.accMarks = new int[game.gridSize][game.gridSize];

@@ -100,7 +100,7 @@ class Main{
             if(playMode == PlayMode.SINGLE_PLAYER && game.player == Chess.X){
                 System.out.println("Now is Computer(X) turn. Please wait...");
                 MiniMaxPlayer MiniMaxPlayer = new MiniMaxPlayer();
-                rowAndCol = MiniMaxPlayer.getBestPlacement(game);
+                rowAndCol = MiniMaxPlayer.getBestMove(game);
             }else{
                 System.out.println("Now is " + game.player + " turn. Please choose the avilable number on grid");
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -129,7 +129,7 @@ class Main{
             if(game.checkWin(rowAndCol[0], rowAndCol[1])){
                 System.out.println("Player " + game.player + " win!");
                 break;
-            }else if(game.placeCount == gridSize * gridSize){
+            }else if(game.checkDraw()){
                 System.out.println("Draw game!");
                 break;
             }else{

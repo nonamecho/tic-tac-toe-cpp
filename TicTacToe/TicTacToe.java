@@ -59,6 +59,9 @@ class TicTacToe {
         return false;
     }
 
+    public boolean checkDraw(){
+        return placeCount == gridSize * gridSize;
+    }
     public void togglePlayer(){
         player = player == Chess.O? Chess.X: Chess.O;
     }
@@ -91,11 +94,6 @@ class TicTacToe {
                 Utils.printContentNTimes("----", gridSize, true);
             }
         }
-    }
-
-    public void play(int gridSize, int accToWinSize) throws IOException{
-       
-        
     }
 
 }
