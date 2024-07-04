@@ -2,7 +2,7 @@ public class MiniMaxPlayer {
     private static final int MAX_DEPTH = 5;
     private int gridSize;
     private Chess player;
-    private int[][] accMarks;
+    private int[][] scores;
 
     private boolean evaluate(TicTacToe game, int depth, int row, int column, int masterRow, int masterColumn){
         if(game.grid[row][column]==null){
@@ -23,9 +23,9 @@ public class MiniMaxPlayer {
             } 
 
             if(game.player == player){
-                accMarks[masterRow][masterColumn] = accMarks[masterRow][masterColumn] + 1;
+                scores[masterRow][masterColumn] = scores[masterRow][masterColumn] + 1;
             }else{
-                accMarks[masterRow][masterColumn] = accMarks[masterRow][masterColumn] - 1;
+                scores[masterRow][masterColumn] = scores[masterRow][masterColumn] - 1;
             }
 
             return false;
@@ -33,20 +33,20 @@ public class MiniMaxPlayer {
         return true;
     }
 
-    private void miniMax(TicTacToe evaluateGame, int depth, int masterRow, int masterColumn){ 
-        TicTacToe cloneEvaluateGame = new TicTacToe();
-        cloneEvaluateGame.init(evaluateGame.gridSize, evaluateGame.gridSize, Utils.deepCloneGrid(evaluateGame.grid), evaluateGame.player);
+    private void miniMax(TicTacToe game, int depth, int masterRow, int masterColumn){ 
+        TicTacToe cloneGame = new TicTacToe();
+        cloneGame.init(game.gridSize, game.gridSize, Utils.deepCloneGrid(game.grid), game.player);
         
         outerloop:
         for(int i = 0; i < gridSize; i++){
             for(int j = 0; j < gridSize; j++){
-                if(cloneEvaluateGame.grid[i][j]==null){
+                if(cloneGame.grid[i][j]==null){
                     boolean evaluateResult;
 
                     if(depth==0){
-                        evaluateResult = evaluate(cloneEvaluateGame, depth, i, j, i, j);
+                        evaluateResult = evaluate(cloneGame, depth, i, j, i, j);
                     }else{
-                        evaluateResult = evaluate(cloneEvaluateGame, depth, i, j, masterRow, masterColumn);
+                        evaluateResult = evaluate(cloneGame, depth, i, j, masterRow, masterColumn);
                     }
                    
                     if(depth>MAX_DEPTH || !evaluateResult){
@@ -61,7 +61,7 @@ public class MiniMaxPlayer {
     public int[] getBestMove(TicTacToe game){
         this.gridSize = game.gridSize;
         this.player = game.player;
-        this.accMarks = new int[game.gridSize][game.gridSize];
+        this.scores = new int[game.gridSize][game.gridSize];
 
         // Run mini max algorithm for each layer and cases, accumalate the marks
         miniMax( game, 0, -1, -1);
@@ -72,7 +72,7 @@ public class MiniMaxPlayer {
         for(int i = 0; i < game.gridSize; i++){
             for(int j = 0; j < game.gridSize; j++){
                 if(game.grid[i][j]== null){
-                    if((bestMove[0] == -1 && bestMove[1] == -1) || (accMarks[i][j]>accMarks[bestMove[0]][bestMove[1]])){
+                    if((bestMove[0] == -1 && bestMove[1] == -1) || (scores[i][j]>scores[bestMove[0]][bestMove[1]])){
                         bestMove[0] = i;
                         bestMove[1] = j;
                     }
