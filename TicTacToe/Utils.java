@@ -48,4 +48,14 @@ public class Utils {
         }
         return counter;
     }
+
+    public static Chess[][] deepCloneGrid(Chess[][] grid){
+        Chess[][] clone = new Chess[grid.length][grid.length];
+        for(int i = 0; i < grid.length; i++){
+            for(int j = 0; j < grid.length; j++){
+                clone[i][j] = grid[i][j];
+            }
+        }
+        return clone;
+    }
 }

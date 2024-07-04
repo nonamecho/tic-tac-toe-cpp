@@ -70,7 +70,7 @@ class TicTacToe {
         placeCount++;
     }
 
-    private void drawGrid(){
+    public void drawGrid(){
         for (int i = 0; i < gridSize; i++){
             for(int j = 0; j < gridSize; j++){
                 if(grid[i][j]!= null){
@@ -91,46 +91,7 @@ class TicTacToe {
     }
 
     public void play(int gridSize, int accToWinSize) throws IOException{
-        // Preparation
-        init(gridSize, accToWinSize, new Chess[gridSize][gridSize], Chess.O);
-        drawGrid();
-
-        // Play game
-        while (true) {
-            System.out.println("Now is " + player + " turn. Please choose the avilable number on grid");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            String input = reader.readLine();
-            try{
-                int placement = Integer.parseInt(input);
-                if(placement < 1 || placement > gridSize * gridSize){
-                    System.out.println("***Out of range!");
-                    continue;
-                }else{
-                    int[] rowAndCol = Utils.placementToRowAndCol(placement, gridSize);
-                    if(grid[rowAndCol[0]][rowAndCol[1]] != null){
-                        System.out.println("***Not available!");
-                        continue;
-                    }else{
-                        placeChess(rowAndCol[0],rowAndCol[1]);
-                        drawGrid();
-
-                        if(checkWin(rowAndCol[0], rowAndCol[1])){
-                            System.out.println("Player " + player + " win!");
-                            break;
-                        }else if(placeCount == gridSize * gridSize){
-                            System.out.println("Draw game!");
-                            break;
-                        }else{
-                            togglePlayer();
-                        }
-                    }
-                }
-            }catch(NumberFormatException e){
-                System.out.println("***Invalid input");
-                continue;
-            }
-            
-        }
+       
         
     }
 

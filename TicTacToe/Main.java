@@ -72,7 +72,46 @@ class Main{
         int accToWinSize = chooseAccToWinSize(gridSize);
 
         // Start new game
-        game.play(gridSize, accToWinSize);
+         // Preparation
+         game.init(gridSize, accToWinSize, new Chess[gridSize][gridSize], Chess.O);
+         game.drawGrid();
+ 
+         // Play game
+         while (true) {
+             System.out.println("Now is " + game.player + " turn. Please choose the avilable number on grid");
+             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+             String input = reader.readLine();
+             try{
+                 int placement = Integer.parseInt(input);
+                 if(placement < 1 || placement > gridSize * gridSize){
+                     System.out.println("***Out of range!");
+                     continue;
+                 }else{
+                     int[] rowAndCol = Utils.placementToRowAndCol(placement, gridSize);
+                     if(game.grid[rowAndCol[0]][rowAndCol[1]] != null){
+                         System.out.println("***Not available!");
+                         continue;
+                     }else{
+                         game.placeChess(rowAndCol[0],rowAndCol[1]);
+                         game.drawGrid();
+ 
+                         if(game.checkWin(rowAndCol[0], rowAndCol[1])){
+                             System.out.println("Player " + game.player + " win!");
+                             break;
+                         }else if(game.placeCount == gridSize * gridSize){
+                             System.out.println("Draw game!");
+                             break;
+                         }else{
+                             game.togglePlayer();
+                         }
+                     }
+                 }
+             }catch(NumberFormatException e){
+                 System.out.println("***Invalid input");
+                 continue;
+             }
+             
+         }
 
         // Ask play again
         if(!choosePlayAgain()){
