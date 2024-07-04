@@ -99,8 +99,8 @@ class Main{
             int[] rowAndCol;
             if(playMode == PlayMode.SINGLE_PLAYER && game.player == Chess.X){
                 System.out.println("Now is Computer(X) turn. Please wait...");
-                MinMaxPlayer minMaxPlayer = new MinMaxPlayer();
-                rowAndCol = minMaxPlayer.getBestPlacement(game);
+                MiniMaxPlayer MiniMaxPlayer = new MiniMaxPlayer();
+                rowAndCol = MiniMaxPlayer.getBestPlacement(game);
             }else{
                 System.out.println("Now is " + game.player + " turn. Please choose the avilable number on grid");
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
