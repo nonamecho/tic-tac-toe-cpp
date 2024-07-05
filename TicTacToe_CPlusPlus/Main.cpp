@@ -4,6 +4,7 @@
 using namespace std;
 static int GRID_SIZE_LOW = 3;
 static int GRID_SIZE_HIGH = 5;
+static int MINIMAX_MAX_DEPTH = 5;
 
 // from Enum.java
 enum PlayMode{
@@ -252,6 +253,96 @@ class TicTacToe{
         };
 };
 
+class MiniMaxPlayer{
+    private:
+        int gridSize;
+        Chess player;
+        vector<vector<int> > scores;
+
+    private:
+        bool evaluate(TicTacToe game, int depth, int row, int column, int masterRow, int masterColumn){
+            if(game.grid[row][column] == B){
+                game.placeChess(row, column);
+    
+                bool isDraw = game.checkDraw();
+                if(isDraw) return false;
+
+                bool isWin = game.checkWin(row, column);
+
+                if(!isWin){
+                if(depth<MINIMAX_MAX_DEPTH){
+                    game.togglePlayer(); // temp toggle player for passing to recursive miniMax to next level
+                    miniMax(game, depth+1, masterRow, masterColumn);
+                    game.togglePlayer(); // toggle back player
+                }
+                game.removeChess(row, column); // remove placed chess for next evaluation in same level
+                return true;
+                }
+                if(game.player == player){
+                scores[masterRow][masterColumn] = scores[masterRow][masterColumn] + 1;
+                }else{
+                    scores[masterRow][masterColumn] = scores[masterRow][masterColumn] - 1;
+                }
+
+                return false; 
+
+            }
+            return true;
+        }
+
+        private:
+            void miniMax(TicTacToe game, int depth, int masterRow, int masterColumn){
+                TicTacToe cloneGame;
+                cloneGame.init(game.gridSize, game.gridSize, deepCloneGrid(game.grid), game.player);
+                for(int i = 0; i < gridSize; i++){
+                    for(int j = 0; j < gridSize; j++){
+                        if(cloneGame.grid[i][j]==B){
+                            bool evaluateResult;
+
+                            if(depth==0){
+                                evaluateResult = evaluate(cloneGame, depth, i, j, i, j);
+                            }else{
+                                evaluateResult = evaluate(cloneGame, depth, i, j, masterRow, masterColumn);
+                            }
+                        
+                            if(depth>MINIMAX_MAX_DEPTH || !evaluateResult){
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        
+        public:
+            vector<int> getBestMove(TicTacToe game){
+                this->gridSize = game.gridSize;
+                this->player = game.player;
+                
+                // Run mini max algorithm for each layer and cases, accumalate the marks
+                miniMax(game, 0, -1, -1);
+
+                // Find the best move by the accumalated marks
+                vector<int>bestMove;
+                bestMove.push_back(-1);
+                bestMove.push_back(-1);
+
+                for(int i = 0; i < game.gridSize; i++){
+                for(int j = 0; j < game.gridSize; j++){
+                    if(game.grid[i][j]== B){
+                        if((bestMove[0] == -1 && bestMove[1] == -1) || (scores[i][j]>scores[bestMove[0]][bestMove[1]])){
+                            bestMove[0] = i;
+                            bestMove[1] = j;
+                        }
+                    }
+                }
+            }
+            
+            return bestMove;
+
+            }
+
+};
+
 // from Main.java
 int main(){
    TicTacToe game;
@@ -261,7 +352,7 @@ int main(){
    
    while(true){
     // Choose play mode
-   choosePlayMode();
+   PlayMode playMode = choosePlayMode();
 
    // Choose grid size
    int gridSize = chooseGridSize();
@@ -277,18 +368,25 @@ int main(){
 
    while(true){
     vector<int> rowAndCol;
-    int placement;
-    cout << "Now is " << game.player << " turn. Please choose the available number on grid" << endl;
-    cin >> placement;
-    if(placement < 1 || placement > gridSize * gridSize){
-        cout << "***Out of range!" << endl;
-        continue;
+    if(playMode == SINGLE_PLAYER && game.player == X){
+        cout << "Now is Computer(X) turn. Please wait..." << endl;
+        MiniMaxPlayer MiniMaxPlayer;
+        rowAndCol = MiniMaxPlayer.getBestMove(game);
     }else{
-        rowAndCol = placementToRowAndCol(placement, gridSize);
-        if(game.grid[rowAndCol[0]][rowAndCol[1]] != B){
-            cout << "***Not available!" << endl;
-        }
+         int placement;
+         cout << "Now is " << game.player << " turn. Please choose the available number on grid" << endl;
+         cin >> placement;
+         if(placement < 1 || placement > gridSize * gridSize){
+            cout << "***Out of range!" << endl;
+            continue;
+         }else{
+            rowAndCol = placementToRowAndCol(placement, gridSize);
+            if(game.grid[rowAndCol[0]][rowAndCol[1]] != B){
+                cout << "***Not available!" << endl;
+            }
+         }
     }
+   
     game.placeChess(rowAndCol[0], rowAndCol[1]);
     game.drawGrid();
 
