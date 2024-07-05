@@ -71,9 +71,11 @@ static int getPlaceCount(vector<vector<Chess> > grid){
 static vector<vector<Chess> > deepCloneGrid(vector<vector<Chess> > grid){
      vector<vector<Chess> > clone;
         for(int i = 0; i < grid.size(); i++){
+            vector<Chess> rowClone;
             for(int j = 0; j < grid.size(); j++){
-                clone[i][j] = grid[i][j];
+                rowClone.push_back(grid[i][j]);
             }
+            clone.push_back(rowClone);
         }
         return clone;
 }
@@ -84,6 +86,18 @@ static vector<vector<Chess> > generateGrid(int gridSize){
         vector<Chess> rowVector;
         for (int j = 0; j < gridSize; j++){
             rowVector.push_back(B);
+        }
+        output.push_back(rowVector);
+    }
+    return output;
+}
+
+static vector<vector<int> > generateScoreGrid(int gridSize){
+     vector<vector<int> > output;
+    for(int i = 0; i < gridSize; i++){
+        vector<int> rowVector;
+        for (int j = 0; j < gridSize; j++){
+            rowVector.push_back(0);
         }
         output.push_back(rowVector);
     }
@@ -279,7 +293,7 @@ class MiniMaxPlayer{
                 return true;
                 }
                 if(game.player == player){
-                scores[masterRow][masterColumn] = scores[masterRow][masterColumn] + 1;
+                    scores[masterRow][masterColumn] = scores[masterRow][masterColumn] + 1;
                 }else{
                     scores[masterRow][masterColumn] = scores[masterRow][masterColumn] - 1;
                 }
@@ -317,6 +331,7 @@ class MiniMaxPlayer{
             vector<int> getBestMove(TicTacToe game){
                 this->gridSize = game.gridSize;
                 this->player = game.player;
+                this->scores = generateScoreGrid(game.gridSize);
                 
                 // Run mini max algorithm for each layer and cases, accumalate the marks
                 miniMax(game, 0, -1, -1);
@@ -325,7 +340,7 @@ class MiniMaxPlayer{
                 vector<int>bestMove;
                 bestMove.push_back(-1);
                 bestMove.push_back(-1);
-
+                
                 for(int i = 0; i < game.gridSize; i++){
                 for(int j = 0; j < game.gridSize; j++){
                     if(game.grid[i][j]== B){
@@ -334,8 +349,8 @@ class MiniMaxPlayer{
                             bestMove[1] = j;
                         }
                     }
+                    }
                 }
-            }
             
             return bestMove;
 
@@ -362,8 +377,7 @@ int main(){
 
    // Start new game
    // Preparation
-   vector<vector<Chess> > grid = generateGrid(3);
-   game.init(gridSize,accToWinSize,grid, O);
+   game.init(gridSize,accToWinSize,generateGrid(gridSize), O);
    game.drawGrid();
 
    while(true){
@@ -406,7 +420,7 @@ int main(){
         break;
     }
    }
-   
+
    
 
    cout << "Thanks for playing" << endl;
