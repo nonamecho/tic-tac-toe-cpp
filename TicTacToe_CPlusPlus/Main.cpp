@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <string>
 using namespace std;
 static int GRID_SIZE_LOW = 3;
 static int GRID_SIZE_HIGH = 5;
@@ -17,23 +18,64 @@ enum Chess{
 };
 
 // from Utils.java
-//TODO
-static vector<int> placementToRowAndCol(int placement, int gridSize){};
+static vector<int> placementToRowAndCol(int placement, int gridSize){
+    vector<int> output;
 
-//TODO
-static int rowAndColToPlacement(int row, int column, int gridSize){};
+    if(placement % gridSize == 0){
+        output.push_back(placement/gridSize - 1);
+        output.push_back(gridSize - 1);
+    }else{
+        output.push_back(placement / gridSize);
+        output.push_back(placement % gridSize - 1);
+    }
 
-//TODO
-void printContentNTimes(string content, int time, bool newLine){};
+    return output;
 
-//TODO
-void printChessWithEmptySpace(string content, int space){};
+};
 
-//TODO
-static int getPlaceCount(vector<vector<Chess> >){};
+static int rowAndColToPlacement(int row, int column, int gridSize){
+    return row * gridSize + column + 1;
+};
 
-//TODO
-static vector<vector<Chess> > deepCloneGrid(vector<vector<Chess> > grid){}
+void printContentNTimes(string content, int time, bool newLine){
+    for(int i = 0; i < time; i++){
+        cout << content;
+    }
+    if(newLine){
+        cout << endl;
+    }
+};
+
+void printChessWithEmptySpace(string content, int space){
+    if(content.length() > space){
+        throw invalid_argument("content should not greater than space");
+    }
+    
+    printContentNTimes(" ", space - content.length(), false);
+    cout << content;
+};
+
+static int getPlaceCount(vector<vector<Chess> > grid){
+    int counter = 0;
+        for(int i = 0; i < grid.size(); i++){
+            for (int j = 0; j < grid.size(); j++){
+                if(grid[i][j]!=B){
+                    counter++;
+                }
+            }
+        }
+        return counter;
+};
+
+static vector<vector<Chess> > deepCloneGrid(vector<vector<Chess> > grid){
+     vector<vector<Chess> > clone;
+        for(int i = 0; i < grid.size(); i++){
+            for(int j = 0; j < grid.size(); j++){
+                clone[i][j] = grid[i][j];
+            }
+        }
+        return clone;
+}
 
 static vector<vector<Chess> > generateGrid(int gridSize){
     vector<vector<Chess> > output;
@@ -65,19 +107,50 @@ static PlayMode choosePlayMode(){
     }
 };
 
-// TODO
 static int chooseGridSize(){
-    return 0;
+      while(true){
+        int input;
+        cout << "please input a grid size (" << GRID_SIZE_LOW << " - " << GRID_SIZE_HIGH << ")" << endl;
+        cin >> input;
+        if(input < GRID_SIZE_LOW || input > GRID_SIZE_HIGH){
+            cout << "***Out of range" << endl;
+        }else {
+            return input;
+        }
+        cin.clear();
+        cin.ignore(1000,'\n');
+    }
 }
 
-// TODO
-static int chooseAccToWinSize(){
-    return 0;
+static int chooseAccToWinSize(int gridSize){
+     while(true){
+        int input;
+        cout << "please input a accumulate to win size (within " << GRID_SIZE_LOW << " and grid size)" << endl;
+        cin >> input;
+        if(input < GRID_SIZE_LOW || input > gridSize){
+            cout << "***Out of range" << endl;
+        }else {
+            return input;
+        }
+        cin.clear();
+        cin.ignore(1000,'\n');
+    }
 }
 
-// TODO
 static bool choosePlayAgain(){
-    return false;
+      while(true){
+        char input;
+        cout << "Play again? (Y/N)";
+        cin >> input;
+        if(input == 'Y' || input == 'y'){
+            return true;
+        }else if(input == 'N' || input == 'n'){
+            return false;
+        }
+        cout << "***Invalid input";
+        cin.clear();
+        cin.ignore(1000,'\n');
+    }
 }
 
 // from TicTacToe.java
@@ -96,28 +169,87 @@ class TicTacToe{
             this->player = player;
             placeCount = 0;
         }
-    // TODO
     public:
-        bool checkWin(){
+        bool checkWin(int row, int column){
+            int rowAcc = 0;
+            int colAcc = 0;
+            int diagAcc = 0;
+            int antiDiagAcc = 0;
+            for(int checkNum = 0; checkNum < gridSize; checkNum++){
+                if(grid[row][checkNum] == player){
+                    rowAcc++;
+                    if(rowAcc==accToWinSize){
+                        return true;
+                    }
+                }else{
+                    rowAcc = 0;
+                }
+                if(grid[checkNum][column] == player){
+                    colAcc++;
+                    if(colAcc==accToWinSize){
+                        return true;
+                    }
+                }else{
+                    colAcc = 0;
+                }
+                if(grid[checkNum][checkNum] == player){
+                    diagAcc++;
+                    if(diagAcc==accToWinSize){
+                        return true;
+                    }
+                }else{
+                    diagAcc = 0;
+                }
+                if(grid[checkNum][gridSize - 1 -checkNum] == player){
+                    antiDiagAcc++;
+                    if(antiDiagAcc==accToWinSize){
+                        return true;
+                    }
+                }else{
+                    antiDiagAcc = 0;
+                }
+            }
             return false;
         }
-    // TODO
     public:
         bool checkDraw(){
-            return false;
+            return placeCount == gridSize * gridSize;
         }
-    // TODO
     public:
-        void togglePlayer(){};
-    // TODO
+        void togglePlayer(){
+            player = player == O? X: O;
+        };
     public:
-        void playChess(){};
-    // TODO
+        void placeChess(int row, int column){
+             grid[row][column] = player; 
+             placeCount++;
+        };
     public:
-        void removeChess(){};
-    // TODO
+        void removeChess(int row, int column){
+             grid[row][column] = B;
+             placeCount--;
+        };
     public:
-        void drawGrid(){};
+        void drawGrid(){
+            for (int i = 0; i < gridSize; i++){
+                for(int j = 0; j < gridSize; j++){
+                    if(grid[i][j] != B){
+                        string printable = grid[i][j] == O? "O": "X";
+                        printChessWithEmptySpace(printable, 3);
+                    }else{
+                        printChessWithEmptySpace(to_string(rowAndColToPlacement(i,j,gridSize)),3);
+                    }
+
+                    if(j != gridSize-1){
+                        printContentNTimes("|", 1, false);
+                    }
+                }
+                printContentNTimes("", 1, true);
+                if(i != gridSize -1){
+                    printContentNTimes("----", gridSize, true);
+                }
+            }
+        };
 };
 
 // from Main.java
@@ -126,14 +258,16 @@ int main(){
 
    // greeting
    cout << "Welcome to Tic Tac Toe!" << endl;
-   // Choose play mode
+   
+   while(true){
+    // Choose play mode
    choosePlayMode();
 
    // Choose grid size
    int gridSize = chooseGridSize();
 
    // Choose acc to win size
-   int accToWinSize = chooseAccToWinSize();
+   int accToWinSize = chooseAccToWinSize(gridSize);
 
    // Start new game
    // Preparation
@@ -141,15 +275,40 @@ int main(){
    game.init(gridSize,accToWinSize,grid, O);
    game.drawGrid();
 
-   // TODO: Playgame
    while(true){
+    vector<int> rowAndCol;
+    int placement;
+    cout << "Now is " << game.player << " turn. Please choose the available number on grid" << endl;
+    cin >> placement;
+    if(placement < 1 || placement > gridSize * gridSize){
+        cout << "***Out of range!" << endl;
+        continue;
+    }else{
+        rowAndCol = placementToRowAndCol(placement, gridSize);
+        if(game.grid[rowAndCol[0]][rowAndCol[1]] != B){
+            cout << "***Not available!" << endl;
+        }
+    }
+    game.placeChess(rowAndCol[0], rowAndCol[1]);
+    game.drawGrid();
 
+    if(game.checkWin(rowAndCol[0],rowAndCol[1])){
+        cout << "Player " << game.player << " win!" << endl;
+        break;
+    }else if(game.checkDraw()){
+        cout << "Draw game!" << endl;
+        break;
+    }else{
+        game.togglePlayer();
+    };
+   }
+ 
    // Ask play again
     if(!choosePlayAgain()){
         break;
     }
    }
-
+   
    
 
    cout << "Thanks for playing" << endl;
