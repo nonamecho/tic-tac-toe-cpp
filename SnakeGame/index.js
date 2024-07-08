@@ -42,20 +42,32 @@ function drawTaget() {
 }
 
 function checkIfCollideTarget(x, y) {
+  const nextX =
+    steps[moves[0].step] == "r"
+      ? moves[0].x + 1
+      : steps[moves[0].step] == "l"
+      ? moves[0].x - 1
+      : moves[0].x;
+  const nextY =
+    steps[moves[0].step] == "d"
+      ? moves[0].y + 1
+      : steps[moves[0].step] == "u"
+      ? moves[0].y - 1
+      : moves[0].y;
   return (
-    (moves[0].x >= x &&
-      moves[0].x <= x + objectSize &&
-      moves[0].y >= y &&
-      moves[0].y <= y + objectSize) ||
-    (moves[0].x + objectSize >= x &&
-      moves[0].x + objectSize <= x + objectSize &&
-      moves[0].y + objectSize >= y &&
-      moves[0].y + objectSize <= y + objectSize)
+    (nextX + 1 >= x &&
+      nextX + 1 <= x + objectSize &&
+      nextY + 1 >= y &&
+      nextY + 1 <= y + objectSize) ||
+    (nextX + objectSize - 1 >= x &&
+      nextX + objectSize - 1 <= x + objectSize &&
+      nextY + objectSize - 1 >= y &&
+      nextY + objectSize - 1 <= y + objectSize)
   );
 }
 
 function checkIfCollideSelf() {
-  for (let i = 4; i < moves.length; i++) {
+  for (let i = 1; i < moves.length; i++) {
     if (checkIfCollideTarget(moves[i].x, moves[i].y)) return true;
   }
   return false;
@@ -188,16 +200,24 @@ function draw() {
 addEventListener("keydown", (e) => {
   switch (e.key) {
     case "ArrowUp":
-      catchMove = "u";
+      if (steps[moves[0].step] != "d") {
+        catchMove = "u";
+      }
       break;
     case "ArrowDown":
-      catchMove = "d";
+      if (steps[moves[0].step] != "u") {
+        catchMove = "d";
+      }
       break;
     case "ArrowLeft":
-      catchMove = "l";
+      if (steps[moves[0].step] != "r") {
+        catchMove = "l";
+      }
       break;
     case "ArrowRight":
-      catchMove = "r";
+      if (steps[moves[0].step] != "l") {
+        catchMove = "r";
+      }
       break;
     default:
       console.log("absorb unsupported keydown event", e);

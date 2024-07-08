@@ -1,4 +1,5 @@
 .vscode
+.DS_Store
 
 TicTacToe_CPlusPlus/*.dSYM/
 
