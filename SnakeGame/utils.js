@@ -4,8 +4,8 @@ function getRandomInt(max) {
 
 function calNextTarget() {
   return {
-    x: getRandomInt(c.width / 2 - objectSize),
-    y: getRandomInt(c.height / 2 - objectSize),
+    x: getRandomInt(WIDTH / 2 - OBJECT_SIZE),
+    y: getRandomInt(HEIGHT / 2 - OBJECT_SIZE),
   };
 }
 
@@ -24,13 +24,13 @@ function checkIfCollideTarget(x, y, snakeHead, direction) {
       : snakeHead.y;
   return (
     (nextX + 1 >= x &&
-      nextX + 1 <= x + objectSize &&
+      nextX + 1 <= x + OBJECT_SIZE &&
       nextY + 1 >= y &&
-      nextY + 1 <= y + objectSize) ||
-    (nextX + objectSize - 1 >= x &&
-      nextX + objectSize - 1 <= x + objectSize &&
-      nextY + objectSize - 1 >= y &&
-      nextY + objectSize - 1 <= y + objectSize)
+      nextY + 1 <= y + OBJECT_SIZE) ||
+    (nextX + OBJECT_SIZE - 1 >= x &&
+      nextX + OBJECT_SIZE - 1 <= x + OBJECT_SIZE &&
+      nextY + OBJECT_SIZE - 1 >= y &&
+      nextY + OBJECT_SIZE - 1 <= y + OBJECT_SIZE)
   );
 }
 
@@ -52,9 +52,9 @@ function checkIfCollideSelf(snakeObjs, direction) {
 function checkIfCollideWall(snakeHead) {
   return (
     snakeHead.x <= 0 ||
-    snakeHead.x >= ctx.width ||
+    snakeHead.x >= WIDTH ||
     snakeHead.y <= 0 ||
-    snakeHead.y >= ctx.height
+    snakeHead.y >= HEIGHT
   );
 }
 
@@ -63,31 +63,31 @@ function calSnakeObj(snakeObj, direction) {
   let newY = snakeObj.y;
   switch (direction) {
     case "r":
-      if (newX >= c.width) {
+      if (newX >= WIDTH) {
         newX = 0;
       } else {
-        newX += objectSize;
+        newX += OBJECT_SIZE;
       }
       break;
     case "l":
       if (newX <= 0) {
-        newX = c.width;
+        newX = WIDTH;
       } else {
-        newX -= objectSize;
+        newX -= OBJECT_SIZE;
       }
       break;
     case "u":
       if (newY <= 0) {
-        newY = c.height;
+        newY = HEIGHT;
       } else {
-        newY -= objectSize;
+        newY -= OBJECT_SIZE;
       }
       break;
     case "d":
-      if (newY >= c.height) {
+      if (newY >= HEIGHT) {
         newY = 0;
       } else {
-        newY += objectSize;
+        newY += OBJECT_SIZE;
       }
       break;
     default:
@@ -101,25 +101,25 @@ function calNewSnakeObj(lastSnakeObj, lastSnakeObjDirection) {
     case "u":
       return {
         ...lastSnakeObj,
-        y: lastSnakeObj.y + objectSize,
+        y: lastSnakeObj.y + OBJECT_SIZE,
         step: lastSnakeObj.step - 1,
       };
     case "d":
       return {
         ...lastSnakeObj,
-        y: lastSnakeObj.y - objectSize,
+        y: lastSnakeObj.y - OBJECT_SIZE,
         step: lastSnakeObj.step - 1,
       };
     case "l":
       return {
         ...lastSnakeObj,
-        x: lastSnakeObj.x + objectSize,
+        x: lastSnakeObj.x + OBJECT_SIZE,
         step: lastSnakeObj.step - 1,
       };
     case "r":
       return {
         ...lastSnakeObj,
-        x: lastSnakeObj.x - objectSize,
+        x: lastSnakeObj.x - OBJECT_SIZE,
         step: lastSnakeObj.step - 1,
       };
     default:
