@@ -13,22 +13,22 @@ class Game {
     addEventListener("keydown", (e) => {
       switch (e.key) {
         case "ArrowUp":
-          if (GAME.getSnakeHeadDirection() != "d") {
+          if (this.getSnakeHeadDirection() != "d") {
             this.catchMove = "u";
           }
           break;
         case "ArrowDown":
-          if (GAME.getSnakeHeadDirection() != "u") {
+          if (this.getSnakeHeadDirection() != "u") {
             this.catchMove = "d";
           }
           break;
         case "ArrowLeft":
-          if (GAME.getSnakeHeadDirection() != "r") {
+          if (this.getSnakeHeadDirection() != "r") {
             this.catchMove = "l";
           }
           break;
         case "ArrowRight":
-          if (GAME.getSnakeHeadDirection() != "l") {
+          if (this.getSnakeHeadDirection() != "l") {
             this.catchMove = "r";
           }
           break;
