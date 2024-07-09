@@ -1,6 +1,6 @@
 function main() {
   GAME.next();
-  if (!GAME.checkIfEnd()) {
+  if (!GAME.checkIfCollideWall() && !GAME.checkIfCollideSelf()) {
     setTimeout(() => {
       window.requestAnimationFrame(main);
     }, 500 / SPEED);
