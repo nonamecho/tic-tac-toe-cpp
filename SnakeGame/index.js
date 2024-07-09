@@ -10,15 +10,17 @@ let start = true;
 let catchMove = null;
 
 class Game {
-  steps = ["r"];
-  snakeObjs = [
-    {
-      x: c.width / 2,
-      y: c.height / 2,
-      step: 0,
-    },
-  ];
-  target = calNextTarget();
+  constructor() {
+    this.steps = ["r"];
+    this.snakeObjs = [
+      {
+        x: c.width / 2,
+        y: c.height / 2,
+        step: 0,
+      },
+    ];
+    this.target = calNextTarget();
+  }
 
   checkIfCollideTarget() {
     return checkIfCollideTarget(
@@ -26,6 +28,13 @@ class Game {
       this.target.y,
       this.snakeObjs,
       this.steps
+    );
+  }
+
+  checkIfEnd() {
+    return (
+      checkIfCollideSelf(this.snakeObjs, this.steps) ||
+      checkIfCollideWall(this.snakeObjs)
     );
   }
 
@@ -41,6 +50,23 @@ class Game {
 
   addNewSnakeObj() {
     this.snakeObjs.push(calNewSnakeObj(this.snakeObjs, this.steps));
+  }
+
+  next(catchMove) {
+    if (this.checkIfCollideTarget()) {
+      this.updateTarget();
+      this.addNewSnakeObj();
+    }
+    if (catchMove) {
+      this.steps.push(catchMove);
+    } else {
+      this.steps.push(this.steps[this.steps.length - 1]);
+    }
+    this.snakeObjs = this.snakeObjs.map((snakeObj) => ({
+      ...snakeObj,
+      step: snakeObj.step + 1,
+    }));
+    game.updateSnakeObjs();
   }
 }
 
@@ -67,33 +93,15 @@ function main() {
   ctx.reset();
   drawFrame();
   drawTaget(game.target);
-
-  game.updateSnakeObjs();
   drawSnake(game.snakeObjs);
 
-  if (
-    checkIfCollideSelf(game.snakeObjs, game.steps) ||
-    checkIfCollideWall(game.snakeObjs)
-  ) {
-    // end game
+  game.next(catchMove);
+  catchMove = null;
+
+  if (game.checkIfEnd()) {
     start = false;
   }
 
-  if (game.checkIfCollideTarget()) {
-    game.updateTarget();
-    game.addNewSnakeObj();
-  }
-
-  if (catchMove) {
-    game.steps.push(catchMove);
-    catchMove = null;
-  } else {
-    game.steps.push(game.steps[game.steps.length - 1]);
-  }
-  game.snakeObjs = game.snakeObjs.map((snakeObj) => ({
-    ...snakeObj,
-    step: snakeObj.step + 1,
-  }));
   if (start) {
     setTimeout(() => {
       window.requestAnimationFrame(main);
