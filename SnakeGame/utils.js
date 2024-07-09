@@ -10,18 +10,24 @@ function calNextTarget() {
 }
 
 function checkIfCollideTarget(x, y, snakeHead, direction) {
-  const nextX =
-    direction == "r"
-      ? snakeHead.x + 1
-      : direction == "l"
-      ? snakeHead.x - 1
-      : snakeHead.x;
-  const nextY =
-    direction == "d"
-      ? snakeHead.y + 1
-      : direction == "u"
-      ? snakeHead.y - 1
-      : snakeHead.y;
+  let nextX = snakeHead.x;
+  let nextY = snakeHead.y;
+  switch (direction) {
+    case "r":
+      nextX = snakeHead.x + 1;
+      break;
+    case "l":
+      nextX = snakeHead.x - 1;
+      break;
+    case "d":
+      nextY = snakeHead.y + 1;
+      break;
+    case "u":
+      nextY = snakeHead.y - 1;
+      break;
+    default:
+      console.error("unsupportted move direction", direction);
+  }
   return (
     (nextX + 1 >= x &&
       nextX + 1 <= x + OBJECT_SIZE &&
