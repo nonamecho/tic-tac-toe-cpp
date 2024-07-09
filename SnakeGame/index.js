@@ -9,7 +9,7 @@ let steps = ["r"];
 let objectSize = 10;
 let speed = 10;
 
-let moves = [
+let snakeObjs = [
   {
     x: c.width / 2,
     y: c.height / 2,
@@ -34,8 +34,8 @@ function drawTaget() {
 
 function drawSnake() {
   ctx.fillStyle = "green";
-  moves.forEach((move) => {
-    ctx.fillRect(move.x, move.y, objectSize, objectSize);
+  snakeObjs.forEach((snakeObj) => {
+    ctx.fillRect(snakeObj.x, snakeObj.y, objectSize, objectSize);
   });
 }
 
@@ -44,18 +44,18 @@ function draw() {
   drawFrame();
   drawTaget();
 
-  // update moves
-  moves = moves.map((move) => calMove(move));
+  // update snakeObjs
+  snakeObjs = snakeObjs.map((snakeObj) => calMove(snakeObj));
   drawSnake();
 
-  if (checkIfCollideSelf(moves) || checkIfCollideWall(moves)) {
+  if (checkIfCollideSelf(snakeObjs) || checkIfCollideWall(snakeObjs)) {
     // end game
     start = false;
   }
 
-  if (checkIfCollideTarget(target.x, target.y, moves)) {
+  if (checkIfCollideTarget(target.x, target.y, snakeObjs)) {
     target = calNextTarget();
-    moves.push(calNewMove());
+    snakeObjs.push(calNewMove());
   }
 
   if (catchMove) {
@@ -64,9 +64,9 @@ function draw() {
   } else {
     steps.push(steps[steps.length - 1]);
   }
-  moves = moves.map((move) => ({
-    ...move,
-    step: move.step + 1,
+  snakeObjs = snakeObjs.map((snakeObj) => ({
+    ...snakeObj,
+    step: snakeObj.step + 1,
   }));
   if (start) {
     setTimeout(() => {
@@ -78,22 +78,22 @@ function draw() {
 addEventListener("keydown", (e) => {
   switch (e.key) {
     case "ArrowUp":
-      if (steps[moves[0].step] != "d") {
+      if (steps[snakeObjs[0].step] != "d") {
         catchMove = "u";
       }
       break;
     case "ArrowDown":
-      if (steps[moves[0].step] != "u") {
+      if (steps[snakeObjs[0].step] != "u") {
         catchMove = "d";
       }
       break;
     case "ArrowLeft":
-      if (steps[moves[0].step] != "r") {
+      if (steps[snakeObjs[0].step] != "r") {
         catchMove = "l";
       }
       break;
     case "ArrowRight":
-      if (steps[moves[0].step] != "l") {
+      if (steps[snakeObjs[0].step] != "l") {
         catchMove = "r";
       }
       break;

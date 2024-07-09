@@ -9,19 +9,19 @@ function calNextTarget() {
   };
 }
 
-function checkIfCollideTarget(x, y, moves) {
+function checkIfCollideTarget(x, y, snakeObjs) {
   const nextX =
-    steps[moves[0].step] == "r"
-      ? moves[0].x + 1
-      : steps[moves[0].step] == "l"
-      ? moves[0].x - 1
-      : moves[0].x;
+    steps[snakeObjs[0].step] == "r"
+      ? snakeObjs[0].x + 1
+      : steps[snakeObjs[0].step] == "l"
+      ? snakeObjs[0].x - 1
+      : snakeObjs[0].x;
   const nextY =
-    steps[moves[0].step] == "d"
-      ? moves[0].y + 1
-      : steps[moves[0].step] == "u"
-      ? moves[0].y - 1
-      : moves[0].y;
+    steps[snakeObjs[0].step] == "d"
+      ? snakeObjs[0].y + 1
+      : steps[snakeObjs[0].step] == "u"
+      ? snakeObjs[0].y - 1
+      : snakeObjs[0].y;
   return (
     (nextX + 1 >= x &&
       nextX + 1 <= x + objectSize &&
@@ -34,19 +34,20 @@ function checkIfCollideTarget(x, y, moves) {
   );
 }
 
-function checkIfCollideSelf(moves) {
-  for (let i = 1; i < moves.length; i++) {
-    if (checkIfCollideTarget(moves[i].x, moves[i].y, moves)) return true;
+function checkIfCollideSelf(snakeObjs) {
+  for (let i = 1; i < snakeObjs.length; i++) {
+    if (checkIfCollideTarget(snakeObjs[i].x, snakeObjs[i].y, snakeObjs))
+      return true;
   }
   return false;
 }
 
-function checkIfCollideWall(moves) {
+function checkIfCollideWall(snakeObjs) {
   return (
-    moves[0].x <= 0 ||
-    moves[0].x >= ctx.width ||
-    moves[0].y <= 0 ||
-    moves[0] >= ctx.height
+    snakeObjs[0].x <= 0 ||
+    snakeObjs[0].x >= ctx.width ||
+    snakeObjs[0].y <= 0 ||
+    snakeObjs[0] >= ctx.height
   );
 }
 
@@ -89,7 +90,7 @@ function calMove(move) {
 }
 
 function calNewMove() {
-  const lastMove = moves[moves.length - 1];
+  const lastMove = snakeObjs[snakeObjs.length - 1];
   switch (steps[lastMove.step]) {
     case "u":
       return {
