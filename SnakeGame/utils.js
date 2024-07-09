@@ -9,7 +9,7 @@ function calNextTarget() {
   };
 }
 
-function checkIfCollideTarget(x, y, snakeObjs) {
+function checkIfCollideTarget(x, y, snakeObjs, steps) {
   const nextX =
     steps[snakeObjs[0].step] == "r"
       ? snakeObjs[0].x + 1
@@ -34,9 +34,9 @@ function checkIfCollideTarget(x, y, snakeObjs) {
   );
 }
 
-function checkIfCollideSelf(snakeObjs) {
+function checkIfCollideSelf(snakeObjs, steps) {
   for (let i = 1; i < snakeObjs.length; i++) {
-    if (checkIfCollideTarget(snakeObjs[i].x, snakeObjs[i].y, snakeObjs))
+    if (checkIfCollideTarget(snakeObjs[i].x, snakeObjs[i].y, snakeObjs, steps))
       return true;
   }
   return false;
@@ -51,7 +51,8 @@ function checkIfCollideWall(snakeObjs) {
   );
 }
 
-function calMove(move) {
+function calMove(move, steps) {
+  console.info(steps);
   let newX = move.x;
   let newY = move.y;
   switch (steps[move.step]) {
@@ -89,7 +90,7 @@ function calMove(move) {
   return { x: newX, y: newY, step: move.step };
 }
 
-function calNewMove() {
+function calNewSnakeObj(snakeObjs, steps) {
   const lastMove = snakeObjs[snakeObjs.length - 1];
   switch (steps[lastMove.step]) {
     case "u":
