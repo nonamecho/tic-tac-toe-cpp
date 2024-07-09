@@ -26,7 +26,7 @@ class Game {
     return checkIfCollideTarget(
       this.target.x,
       this.target.y,
-      this.snakeObjs,
+      this.snakeObjs[0],
       this.steps
     );
   }
@@ -34,7 +34,7 @@ class Game {
   checkIfEnd() {
     return (
       checkIfCollideSelf(this.snakeObjs, this.steps) ||
-      checkIfCollideWall(this.snakeObjs)
+      checkIfCollideWall(this.snakeObjs[0])
     );
   }
 
