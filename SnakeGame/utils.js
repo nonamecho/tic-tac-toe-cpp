@@ -9,17 +9,17 @@ function calNextTarget() {
   };
 }
 
-function checkIfCollideTarget(x, y, snakeHead, steps) {
+function checkIfCollideTarget(x, y, snakeHead, direction) {
   const nextX =
-    steps[snakeHead.step] == "r"
+    direction == "r"
       ? snakeHead.x + 1
-      : steps[snakeHead.step] == "l"
+      : direction == "l"
       ? snakeHead.x - 1
       : snakeHead.x;
   const nextY =
-    steps[snakeHead.step] == "d"
+    direction == "d"
       ? snakeHead.y + 1
-      : steps[snakeHead.step] == "u"
+      : direction == "u"
       ? snakeHead.y - 1
       : snakeHead.y;
   return (
@@ -34,10 +34,15 @@ function checkIfCollideTarget(x, y, snakeHead, steps) {
   );
 }
 
-function checkIfCollideSelf(snakeObjs, steps) {
+function checkIfCollideSelf(snakeObjs, direction) {
   for (let i = 1; i < snakeObjs.length; i++) {
     if (
-      checkIfCollideTarget(snakeObjs[i].x, snakeObjs[i].y, snakeObjs[0], steps)
+      checkIfCollideTarget(
+        snakeObjs[i].x,
+        snakeObjs[i].y,
+        snakeObjs[0],
+        direction
+      )
     )
       return true;
   }
@@ -53,11 +58,10 @@ function checkIfCollideWall(snakeHead) {
   );
 }
 
-function calMove(move, steps) {
-  console.info(steps);
-  let newX = move.x;
-  let newY = move.y;
-  switch (steps[move.step]) {
+function calSnakeObj(snakeObj, direction) {
+  let newX = snakeObj.x;
+  let newY = snakeObj.y;
+  switch (direction) {
     case "r":
       if (newX >= c.width) {
         newX = 0;
@@ -66,7 +70,7 @@ function calMove(move, steps) {
       }
       break;
     case "l":
-      if (move.x <= 0) {
+      if (newX <= 0) {
         newX = c.width;
       } else {
         newX -= objectSize;
@@ -87,39 +91,38 @@ function calMove(move, steps) {
       }
       break;
     default:
-      console.error("unsupportted move direction", steps[move.step]);
+      console.error("unsupportted move direction", direction);
   }
-  return { x: newX, y: newY, step: move.step };
+  return { x: newX, y: newY, step: snakeObj.step };
 }
 
-function calNewSnakeObj(snakeObjs, steps) {
-  const lastMove = snakeObjs[snakeObjs.length - 1];
-  switch (steps[lastMove.step]) {
+function calNewSnakeObj(lastSnakeObj, lastSnakeObjDirection) {
+  switch (lastSnakeObjDirection) {
     case "u":
       return {
-        ...lastMove,
-        y: lastMove.y + objectSize,
-        step: lastMove.step - 1,
+        ...lastSnakeObj,
+        y: lastSnakeObj.y + objectSize,
+        step: lastSnakeObj.step - 1,
       };
     case "d":
       return {
-        ...lastMove,
-        y: lastMove.y - objectSize,
-        step: lastMove.step - 1,
+        ...lastSnakeObj,
+        y: lastSnakeObj.y - objectSize,
+        step: lastSnakeObj.step - 1,
       };
     case "l":
       return {
-        ...lastMove,
-        x: lastMove.x + objectSize,
-        step: lastMove.step - 1,
+        ...lastSnakeObj,
+        x: lastSnakeObj.x + objectSize,
+        step: lastSnakeObj.step - 1,
       };
     case "r":
       return {
-        ...lastMove,
-        x: lastMove.x - objectSize,
-        step: lastMove.step - 1,
+        ...lastSnakeObj,
+        x: lastSnakeObj.x - objectSize,
+        step: lastSnakeObj.step - 1,
       };
     default:
-      console.error("unsupportted move direction", steps[lastMove.step]);
+      console.error("unsupportted move direction", lastSnakeObjDirection);
   }
 }

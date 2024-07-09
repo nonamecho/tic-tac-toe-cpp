@@ -27,20 +27,20 @@ class Game {
       this.target.x,
       this.target.y,
       this.snakeObjs[0],
-      this.steps
+      this.steps[this.snakeObjs[0].step]
     );
   }
 
   checkIfEnd() {
     return (
-      checkIfCollideSelf(this.snakeObjs, this.steps) ||
+      checkIfCollideSelf(this.snakeObjs, this.steps[this.snakeObjs[0].step]) ||
       checkIfCollideWall(this.snakeObjs[0])
     );
   }
 
   updateSnakeObjs() {
     this.snakeObjs = this.snakeObjs.map((snakeObj) =>
-      calMove(snakeObj, this.steps)
+      calSnakeObj(snakeObj, this.steps[snakeObj.step])
     );
   }
 
@@ -49,7 +49,12 @@ class Game {
   }
 
   addNewSnakeObj() {
-    this.snakeObjs.push(calNewSnakeObj(this.snakeObjs, this.steps));
+    this.snakeObjs.push(
+      calNewSnakeObj(
+        this.snakeObjs[this.snakeObjs.length - 1],
+        this.steps[this.snakeObjs[this.snakeObjs.length - 1].step]
+      )
+    );
   }
 
   next(catchMove) {
