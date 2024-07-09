@@ -21,18 +21,29 @@ class Game {
     this.target = calNextTarget();
   }
 
+  getSnakeHeadDirection() {
+    return this.steps[this.steps.length - 1];
+  }
+
+  clearSteps() {
+    this.steps.slice(
+      this.steps.length - this.snakeObjs.length,
+      this.steps.length - 1
+    );
+  }
+
   checkIfCollideTarget() {
     return checkIfCollideTarget(
       this.target.x,
       this.target.y,
       this.snakeObjs[0],
-      this.steps[this.steps.length - 1]
+      this.getSnakeHeadDirection()
     );
   }
 
   checkIfEnd() {
     return (
-      checkIfCollideSelf(this.snakeObjs, this.steps[this.steps.length - 1]) ||
+      checkIfCollideSelf(this.snakeObjs, this.getSnakeHeadDirection()) ||
       checkIfCollideWall(this.snakeObjs[0])
     );
   }
@@ -64,9 +75,10 @@ class Game {
     if (catchMove) {
       this.steps.push(catchMove);
     } else {
-      this.steps.push(this.steps[this.steps.length - 1]);
+      this.steps.push(this.getSnakeHeadDirection());
     }
     game.updateSnakeObjs();
+    game.clearSteps();
   }
 }
 
