@@ -195,11 +195,6 @@ class Game {
     this.updateSnakeObjs();
     this.clearSteps();
     this.catchMove = null;
-
-    CANVAS.reset();
-    CANVAS.drawFrame();
-    CANVAS.drawTaget(GAME.target);
-    CANVAS.drawSnake(GAME.snakeObjs);
   }
 }
 
