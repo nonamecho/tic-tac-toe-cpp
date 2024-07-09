@@ -1,3 +1,6 @@
+const CANVAS = new Canvas();
+const GAME = new Game();
+
 function main() {
   GAME.next();
   CANVAS.reset();

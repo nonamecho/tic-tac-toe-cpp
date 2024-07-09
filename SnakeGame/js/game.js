@@ -197,5 +197,3 @@ class Game {
     this.catchMove = null;
   }
 }
-
-const GAME = new Game();
