@@ -16,7 +16,6 @@ class Game {
       {
         x: c.width / 2,
         y: c.height / 2,
-        step: 0,
       },
     ];
     this.target = calNextTarget();
@@ -27,20 +26,20 @@ class Game {
       this.target.x,
       this.target.y,
       this.snakeObjs[0],
-      this.steps[this.snakeObjs[0].step]
+      this.steps[this.steps.length - 1]
     );
   }
 
   checkIfEnd() {
     return (
-      checkIfCollideSelf(this.snakeObjs, this.steps[this.snakeObjs[0].step]) ||
+      checkIfCollideSelf(this.snakeObjs, this.steps[this.steps.length - 1]) ||
       checkIfCollideWall(this.snakeObjs[0])
     );
   }
 
   updateSnakeObjs() {
-    this.snakeObjs = this.snakeObjs.map((snakeObj) =>
-      calSnakeObj(snakeObj, this.steps[snakeObj.step])
+    this.snakeObjs = this.snakeObjs.map((snakeObj, i) =>
+      calSnakeObj(snakeObj, this.steps[this.steps.length - 1 - i])
     );
   }
 
@@ -52,7 +51,7 @@ class Game {
     this.snakeObjs.push(
       calNewSnakeObj(
         this.snakeObjs[this.snakeObjs.length - 1],
-        this.steps[this.snakeObjs[this.snakeObjs.length - 1].step]
+        this.steps[this.steps.length - this.snakeObjs.length]
       )
     );
   }
@@ -67,10 +66,6 @@ class Game {
     } else {
       this.steps.push(this.steps[this.steps.length - 1]);
     }
-    this.snakeObjs = this.snakeObjs.map((snakeObj) => ({
-      ...snakeObj,
-      step: snakeObj.step + 1,
-    }));
     game.updateSnakeObjs();
   }
 }
@@ -117,22 +112,22 @@ function main() {
 addEventListener("keydown", (e) => {
   switch (e.key) {
     case "ArrowUp":
-      if (game.steps[game.snakeObjs[0].step] != "d") {
+      if (game.steps[game.steps.length - 1] != "d") {
         catchMove = "u";
       }
       break;
     case "ArrowDown":
-      if (game.steps[game.snakeObjs[0].step] != "u") {
+      if (game.steps[game.steps.length - 1] != "u") {
         catchMove = "d";
       }
       break;
     case "ArrowLeft":
-      if (game.steps[game.snakeObjs[0].step] != "r") {
+      if (game.steps[game.steps.length - 1] != "r") {
         catchMove = "l";
       }
       break;
     case "ArrowRight":
-      if (game.steps[game.snakeObjs[0].step] != "l") {
+      if (game.steps[game.steps.length - 1] != "l") {
         catchMove = "r";
       }
       break;
