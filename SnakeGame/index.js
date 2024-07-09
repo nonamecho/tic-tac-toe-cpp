@@ -21,14 +21,16 @@ let moves = [
   },
 ];
 
-const target = {
+let target = {
   x: getRandomInt(c.width / 2 - objectSize),
   y: getRandomInt(c.height / 2 - objectSize),
 };
 
-function updateTarget() {
-  target.x = getRandomInt(c.width / 2 - objectSize);
-  target.y = getRandomInt(c.height / 2 - objectSize);
+function calNextTarget() {
+  return {
+    x: getRandomInt(c.width / 2 - objectSize),
+    y: getRandomInt(c.height / 2 - objectSize),
+  };
 }
 
 function drawFrame() {
@@ -83,71 +85,70 @@ function checkIfCollideWall() {
 }
 
 function calMove(move) {
+  let newX = move.x;
+  let newY = move.y;
   switch (steps[move.step]) {
     case "r":
-      if (move.x >= c.width) {
-        move.x = 0;
+      if (newX >= c.width) {
+        newX = 0;
       } else {
-        move.x += objectSize;
+        newX += objectSize;
       }
       break;
     case "l":
       if (move.x <= 0) {
-        move.x = c.width;
+        newX = c.width;
       } else {
-        move.x -= objectSize;
+        newX -= objectSize;
       }
       break;
     case "u":
-      if (move.y <= 0) {
-        move.y = c.height;
+      if (newY <= 0) {
+        newY = c.height;
       } else {
-        move.y -= objectSize;
+        newY -= objectSize;
       }
       break;
     case "d":
-      if (move.y >= c.height) {
-        move.y = 0;
+      if (newY >= c.height) {
+        newY = 0;
       } else {
-        move.y += objectSize;
+        newY += objectSize;
       }
       break;
     default:
       console.error("unsupportted move direction", steps[move.step]);
   }
+  return { x: newX, y: newY, step: move.step };
 }
 
-function appendNewMove() {
+function calNewMove() {
   const lastMove = moves[moves.length - 1];
   switch (steps[lastMove.step]) {
     case "u":
-      moves.push({
+      return {
         ...lastMove,
         y: lastMove.y + objectSize,
         step: lastMove.step - 1,
-      });
-      break;
+      };
     case "d":
-      moves.push({
+      return {
         ...lastMove,
         y: lastMove.y - objectSize,
         step: lastMove.step - 1,
-      });
-      break;
+      };
     case "l":
-      moves.push({
+      return {
         ...lastMove,
         x: lastMove.x + objectSize,
         step: lastMove.step - 1,
-      });
-      break;
+      };
     case "r":
-      moves.push({
+      return {
         ...lastMove,
         x: lastMove.x - objectSize,
         step: lastMove.step - 1,
-      });
-      break;
+      };
     default:
       console.error("unsupportted move direction", steps[lastMove.step]);
   }
@@ -156,28 +157,27 @@ function appendNewMove() {
 function drawSnake() {
   ctx.fillStyle = "green";
   moves.forEach((move) => {
-    calMove(move);
     ctx.fillRect(move.x, move.y, objectSize, objectSize);
   });
-}
-
-function endGame() {
-  start = false;
 }
 
 function draw() {
   ctx.reset();
   drawFrame();
   drawTaget();
+
+  // update moves
+  moves = moves.map((move) => calMove(move));
   drawSnake();
 
   if (checkIfCollideSelf() || checkIfCollideWall()) {
-    endGame();
+    // end game
+    start = false;
   }
 
   if (checkIfCollideTarget(target.x, target.y)) {
-    updateTarget();
-    appendNewMove();
+    target = calNextTarget();
+    moves.push(calNewMove());
   }
 
   if (catchMove) {
