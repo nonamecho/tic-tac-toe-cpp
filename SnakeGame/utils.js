@@ -49,7 +49,7 @@ function checkIfCollideWall(snakeHead) {
     snakeHead.x <= 0 ||
     snakeHead.x >= ctx.width ||
     snakeHead.y <= 0 ||
-    snakeHead >= ctx.height
+    snakeHead.y >= ctx.height
   );
 }
 
