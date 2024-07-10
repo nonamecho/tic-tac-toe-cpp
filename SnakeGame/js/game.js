@@ -1,13 +1,49 @@
+class SnakeObj {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+  update(direction) {
+    switch (direction) {
+      case "r":
+        if (this.x >= WIDTH) {
+          this.x = 0;
+        } else {
+          this.x += OBJECT_SIZE;
+        }
+        break;
+      case "l":
+        if (this.x <= 0) {
+          this.x = WIDTH;
+        } else {
+          this.x -= OBJECT_SIZE;
+        }
+        break;
+      case "u":
+        if (this.y <= 0) {
+          this.y = HEIGHT;
+        } else {
+          this.y -= OBJECT_SIZE;
+        }
+        break;
+      case "d":
+        if (this.y >= HEIGHT) {
+          this.y = 0;
+        } else {
+          this.y += OBJECT_SIZE;
+        }
+        break;
+      default:
+        console.error("unsupportted move direction", direction);
+    }
+  }
+}
+
 class Game {
   constructor() {
     this.catchMove = null;
     this.steps = ["r"];
-    this.snakeObjs = [
-      {
-        x: WIDTH / 2,
-        y: HEIGHT / 2,
-      },
-    ];
+    this.snakeObjs = [new SnakeObj(WIDTH / 2 + OBJECT_SIZE, HEIGHT / 2)];
     this.updateTarget();
 
     addEventListener("keydown", (e) => {
@@ -100,43 +136,9 @@ class Game {
   }
 
   updateSnakeObjs() {
-    this.snakeObjs = this.snakeObjs.map((snakeObj, i) => {
+    this.snakeObjs.forEach((snakeObj, i) => {
       const direction = this.steps[this.steps.length - 1 - i];
-      let newX = snakeObj.x;
-      let newY = snakeObj.y;
-      switch (direction) {
-        case "r":
-          if (newX >= WIDTH) {
-            newX = 0;
-          } else {
-            newX += OBJECT_SIZE;
-          }
-          break;
-        case "l":
-          if (newX <= 0) {
-            newX = WIDTH;
-          } else {
-            newX -= OBJECT_SIZE;
-          }
-          break;
-        case "u":
-          if (newY <= 0) {
-            newY = HEIGHT;
-          } else {
-            newY -= OBJECT_SIZE;
-          }
-          break;
-        case "d":
-          if (newY >= HEIGHT) {
-            newY = 0;
-          } else {
-            newY += OBJECT_SIZE;
-          }
-          break;
-        default:
-          console.error("unsupportted move direction", direction);
-      }
-      return { x: newX, y: newY };
+      snakeObj.update(direction);
     });
   }
 
@@ -154,28 +156,24 @@ class Game {
 
     switch (lastSnakeObjDirection) {
       case "u":
-        this.snakeObjs.push({
-          ...lastSnakeObj,
-          y: lastSnakeObj.y + OBJECT_SIZE,
-        });
+        this.snakeObjs.push(
+          new SnakeObj(lastSnakeObj.x, lastSnakeObj.y + OBJECT_SIZE)
+        );
         break;
       case "d":
-        this.snakeObjs.push({
-          ...lastSnakeObj,
-          y: lastSnakeObj.y - OBJECT_SIZE,
-        });
+        this.snakeObjs.push(
+          new SnakeObj(lastSnakeObj.x, lastSnakeObj.y - OBJECT_SIZE)
+        );
         break;
       case "l":
-        this.snakeObjs.push({
-          ...lastSnakeObj,
-          x: lastSnakeObj.x + OBJECT_SIZE,
-        });
+        this.snakeObjs.push(
+          new SnakeObj(lastSnakeObj.x + OBJECT_SIZE, lastSnakeObj.y)
+        );
         break;
       case "r":
-        this.snakeObjs.push({
-          ...lastSnakeObj,
-          x: lastSnakeObj.x - OBJECT_SIZE,
-        });
+        this.snakeObjs.push(
+          new SnakeObj(lastSnakeObj.x - OBJECT_SIZE, lastSnakeObj.y)
+        );
         break;
       default:
         console.error("unsupportted move direction", lastSnakeObjDirection);

@@ -1,5 +1,6 @@
 class Canvas {
   constructor() {
+    /**@type {HTMLCanvasElement} */
     this.c = document.getElementById("myCanvas");
     this.ctx = this.c.getContext("2d");
     this.c.width = WIDTH;
