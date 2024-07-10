@@ -20,6 +20,16 @@ class SnakeObj {
     this.x = x;
     this.y = y;
   }
+
+  detectCollision(snakeHead) {
+    return !(
+      snakeHead.x + OBJECT_SIZE <= this.x ||
+      snakeHead.x >= this.x + OBJECT_SIZE ||
+      snakeHead.y + OBJECT_SIZE <= this.y ||
+      snakeHead.y >= this.y + OBJECT_SIZE
+    );
+  }
+
   update(direction) {
     switch (direction) {
       case "r":
@@ -64,6 +74,15 @@ class SnakeObj {
 class Target {
   constructor() {
     this.update();
+  }
+
+  detectCollision(snakeHead) {
+    return !(
+      snakeHead.x + OBJECT_SIZE < this.x ||
+      snakeHead.x > this.x + OBJECT_SIZE ||
+      snakeHead.y + OBJECT_SIZE < this.y ||
+      snakeHead.y > this.y + OBJECT_SIZE
+    );
   }
 
   update() {
@@ -123,42 +142,9 @@ class Game {
     );
   }
 
-  checkIfCollideTarget(target) {
-    const snakeHead = this.snakeObjs[0];
-    const direction = this.getSnakeHeadDirection();
-    let nextX = snakeHead.x;
-    let nextY = snakeHead.y;
-    switch (direction) {
-      case "r":
-        nextX = snakeHead.x + 1;
-        break;
-      case "l":
-        nextX = snakeHead.x - 1;
-        break;
-      case "d":
-        nextY = snakeHead.y + 1;
-        break;
-      case "u":
-        nextY = snakeHead.y - 1;
-        break;
-      default:
-        console.error("unsupportted move direction", direction);
-    }
-    return (
-      (nextX + 1 >= target.x &&
-        nextX + 1 <= target.x + OBJECT_SIZE &&
-        nextY + 1 >= target.y &&
-        nextY + 1 <= target.y + OBJECT_SIZE) ||
-      (nextX + OBJECT_SIZE - 1 >= target.x &&
-        nextX + OBJECT_SIZE - 1 <= target.x + OBJECT_SIZE &&
-        nextY + OBJECT_SIZE - 1 >= target.y &&
-        nextY + OBJECT_SIZE - 1 <= target.y + OBJECT_SIZE)
-    );
-  }
-
   checkIfCollideSelf() {
     for (let i = 1; i < this.snakeObjs.length; i++) {
-      if (this.checkIfCollideTarget(this.snakeObjs[i])) return true;
+      if (this.snakeObjs[i].detectCollision(this.snakeObjs[0])) return true;
     }
     return false;
   }
@@ -212,7 +198,7 @@ class Game {
   }
 
   next() {
-    if (this.checkIfCollideTarget(this.target)) {
+    if (this.target.detectCollision(this.snakeObjs[0])) {
       this.target.update();
       this.addNewSnakeObj();
     }
