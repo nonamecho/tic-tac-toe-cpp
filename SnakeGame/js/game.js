@@ -85,8 +85,8 @@ class Target {
   }
 
   update() {
-    this.x = getRandomInt(WIDTH / 2 - OBJECT_SIZE);
-    this.y = getRandomInt(WIDTH / 2 - OBJECT_SIZE);
+    this.x = getRandomInt(WIDTH / 2 - OBJECT_SIZE - 10) + 5;
+    this.y = getRandomInt(WIDTH / 2 - OBJECT_SIZE - 10) + 5;
   }
 
   draw() {
@@ -105,9 +105,11 @@ class Game {
       new SnakeObj(WIDTH / 2, HEIGHT / 2),
     ];
     this.target = new Target();
+    this.totolTime = 0;
     this.lastTime = 0;
     this.timeToNext = 0;
     this.timeInterval = 20;
+    this.score = 0;
 
     addEventListener("keydown", (e) => {
       if (!this.start) {
@@ -209,6 +211,7 @@ class Game {
   update(timestamp) {
     if (!this.start) return;
     const deltaTime = timestamp - this.lastTime;
+    this.totolTime += deltaTime;
     this.lastTime = timestamp;
     this.timeToNext += deltaTime;
 
@@ -217,6 +220,7 @@ class Game {
 
       // Handle target
       if (this.target.detectCollision(this.snakeObjs[0])) {
+        this.score += 1;
         this.target.update();
         this.#addNewSnakeObj();
       }
@@ -238,6 +242,9 @@ class Game {
     } else {
       if (!this.start) {
         ctx.fillText("Press any key to start", 10, 30);
+      } else {
+        ctx.fillText("Time: " + Math.floor(this.totolTime / 1000), 10, 30);
+        ctx.fillText("Score: " + this.score, 10, 50);
       }
       this.target.draw();
       this.snakeObjs.forEach((snakeObj) => {

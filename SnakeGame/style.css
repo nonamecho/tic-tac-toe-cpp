@@ -1,3 +1,6 @@
+body {
+  background-color: black;
+}
 #myCanvas {
   border: 1px solid black;
   position: absolute;
@@ -6,4 +9,5 @@
   transform: translate(-50%, -50%);
   height: 600px;
   width: 600px;
+  background-color: rgb(88, 198, 161);
 }
