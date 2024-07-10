@@ -97,20 +97,7 @@ class Target {
 
 class Game {
   constructor() {
-    this.start = false;
-    this.catchMove = null;
-    this.steps = ["r", "r"];
-    this.snakeObjs = [
-      new SnakeObj(WIDTH / 2 + OBJECT_SIZE, HEIGHT / 2),
-      new SnakeObj(WIDTH / 2, HEIGHT / 2),
-    ];
-    this.target = new Target();
-    this.totolTime = 0;
-    this.lastTime = 0;
-    this.timeToNext = 0;
-    this.timeInterval = 20;
-    this.score = 0;
-
+    this.reset();
     addEventListener("keydown", (e) => {
       if (!this.start) {
         this.start = true;
@@ -209,15 +196,23 @@ class Game {
   }
 
   update(timestamp) {
+    // return if not start
     if (!this.start) return;
-    const deltaTime = timestamp - this.lastTime;
-    this.totolTime += deltaTime;
+
+    // handle time
+    const deltaTime = this.lastTime ? timestamp - this.lastTime : 0;
+    this.totalTime += deltaTime;
     this.lastTime = timestamp;
     this.timeToNext += deltaTime;
 
+    // Only update when meet time interval
     if (this.timeToNext > this.timeInterval) {
-      this.timeToNext = 0;
+      this.timeToNext = 0; // update for next time interval
 
+      // handle game end
+      if (this.checkIfCollideSelf() || this.checkIfCollideWall()) {
+        this.reset();
+      }
       // Handle target
       if (this.target.detectCollision(this.snakeObjs[0])) {
         this.score += 1;
@@ -234,22 +229,34 @@ class Game {
       this.catchMove = null;
     }
   }
+  reset() {
+    this.start = false;
+    this.catchMove = null;
+    this.steps = ["r", "r"];
+    this.snakeObjs = [
+      new SnakeObj(WIDTH / 2 + OBJECT_SIZE, HEIGHT / 2),
+      new SnakeObj(WIDTH / 2, HEIGHT / 2),
+    ];
+    this.target = new Target();
+    this.totalTime = 0;
+    this.lastTime = 0;
+    this.timeToNext = 0;
+    this.timeInterval = 20;
+    this.score = 0;
+  }
 
   draw() {
     ctx.reset();
-    if (this.checkIfCollideSelf() || this.checkIfCollideWall()) {
-      ctx.fillText("Oops!", 10, 30);
+
+    if (!this.start) {
+      ctx.fillText("Press any key to start", 10, 30);
     } else {
-      if (!this.start) {
-        ctx.fillText("Press any key to start", 10, 30);
-      } else {
-        ctx.fillText("Time: " + Math.floor(this.totolTime / 1000), 10, 30);
-        ctx.fillText("Score: " + this.score, 10, 50);
-      }
-      this.target.draw();
-      this.snakeObjs.forEach((snakeObj) => {
-        snakeObj.draw();
-      });
+      ctx.fillText("Time: " + Math.floor(this.totalTime / 1000), 10, 30);
+      ctx.fillText("Score: " + this.score, 10, 50);
     }
+    this.target.draw();
+    this.snakeObjs.forEach((snakeObj) => {
+      snakeObj.draw();
+    });
   }
 }
