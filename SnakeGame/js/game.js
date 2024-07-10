@@ -1,3 +1,20 @@
+// Constants
+const OBJECT_SIZE = 10;
+const SPEED = 10;
+const HEIGHT = 600;
+const WIDTH = 600;
+
+// Utils
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
+
+/**@type {HTMLCanvasElement} */
+const c = document.getElementById("myCanvas");
+const ctx = c.getContext("2d");
+c.width = WIDTH;
+c.height = HEIGHT;
+
 class SnakeObj {
   constructor(x, y) {
     this.x = x;
@@ -37,6 +54,27 @@ class SnakeObj {
         console.error("unsupportted move direction", direction);
     }
   }
+
+  draw() {
+    ctx.fillStyle = "green";
+    ctx.fillRect(this.x, this.y, OBJECT_SIZE, OBJECT_SIZE);
+  }
+}
+
+class Target {
+  constructor() {
+    this.update();
+  }
+
+  update() {
+    this.x = getRandomInt(WIDTH / 2 - OBJECT_SIZE);
+    this.y = getRandomInt(WIDTH / 2 - OBJECT_SIZE);
+  }
+
+  draw() {
+    ctx.fillStyle = "red";
+    ctx.fillRect(this.x, this.y, OBJECT_SIZE, OBJECT_SIZE);
+  }
 }
 
 class Game {
@@ -44,7 +82,7 @@ class Game {
     this.catchMove = null;
     this.steps = ["r"];
     this.snakeObjs = [new SnakeObj(WIDTH / 2 + OBJECT_SIZE, HEIGHT / 2)];
-    this.updateTarget();
+    this.target = new Target();
 
     addEventListener("keydown", (e) => {
       switch (e.key) {
@@ -142,13 +180,6 @@ class Game {
     });
   }
 
-  updateTarget() {
-    this.target = {
-      x: getRandomInt(WIDTH / 2 - OBJECT_SIZE),
-      y: getRandomInt(HEIGHT / 2 - OBJECT_SIZE),
-    };
-  }
-
   addNewSnakeObj() {
     const lastSnakeObj = this.snakeObjs[this.snakeObjs.length - 1];
     const lastSnakeObjDirection =
@@ -182,7 +213,7 @@ class Game {
 
   next() {
     if (this.checkIfCollideTarget(this.target)) {
-      this.updateTarget();
+      this.target.update();
       this.addNewSnakeObj();
     }
     if (this.catchMove) {
@@ -193,5 +224,11 @@ class Game {
     this.updateSnakeObjs();
     this.clearSteps();
     this.catchMove = null;
+
+    ctx.reset();
+    this.target.draw();
+    this.snakeObjs.forEach((snakeObj) => {
+      snakeObj.draw();
+    });
   }
 }
