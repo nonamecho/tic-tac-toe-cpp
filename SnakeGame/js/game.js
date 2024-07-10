@@ -1,6 +1,5 @@
 // Constants
 const OBJECT_SIZE = 10;
-const SPEED = 10;
 const HEIGHT = 600;
 const WIDTH = 600;
 
@@ -34,28 +33,28 @@ class SnakeObj {
     switch (direction) {
       case "r":
         if (this.x >= WIDTH) {
-          this.x = 0;
+          //this.x = 0;
         } else {
           this.x += OBJECT_SIZE;
         }
         break;
       case "l":
         if (this.x <= 0) {
-          this.x = WIDTH;
+          //this.x = WIDTH;
         } else {
           this.x -= OBJECT_SIZE;
         }
         break;
       case "u":
         if (this.y <= 0) {
-          this.y = HEIGHT;
+          //this.y = HEIGHT;
         } else {
           this.y -= OBJECT_SIZE;
         }
         break;
       case "d":
         if (this.y >= HEIGHT) {
-          this.y = 0;
+          //this.y = 0;
         } else {
           this.y += OBJECT_SIZE;
         }
@@ -98,12 +97,22 @@ class Target {
 
 class Game {
   constructor() {
+    this.start = false;
     this.catchMove = null;
-    this.steps = ["r"];
-    this.snakeObjs = [new SnakeObj(WIDTH / 2 + OBJECT_SIZE, HEIGHT / 2)];
+    this.steps = ["r", "r"];
+    this.snakeObjs = [
+      new SnakeObj(WIDTH / 2 + OBJECT_SIZE, HEIGHT / 2),
+      new SnakeObj(WIDTH / 2, HEIGHT / 2),
+    ];
     this.target = new Target();
+    this.lastTime = 0;
+    this.timeToNext = 0;
+    this.timeInterval = 20;
 
     addEventListener("keydown", (e) => {
+      if (!this.start) {
+        this.start = true;
+      }
       switch (e.key) {
         case "ArrowUp":
           if (this.getSnakeHeadDirection() != "d") {
@@ -135,13 +144,6 @@ class Game {
     return this.steps[this.steps.length - 1];
   }
 
-  clearSteps() {
-    this.steps.slice(
-      this.steps.length - this.snakeObjs.length,
-      this.steps.length - 1
-    );
-  }
-
   checkIfCollideSelf() {
     for (let i = 1; i < this.snakeObjs.length; i++) {
       if (this.snakeObjs[i].detectCollision(this.snakeObjs[0])) return true;
@@ -159,14 +161,14 @@ class Game {
     );
   }
 
-  updateSnakeObjs() {
+  #updateSnakeObjs() {
     this.snakeObjs.forEach((snakeObj, i) => {
       const direction = this.steps[this.steps.length - 1 - i];
       snakeObj.update(direction);
     });
   }
 
-  addNewSnakeObj() {
+  #addNewSnakeObj() {
     const lastSnakeObj = this.snakeObjs[this.snakeObjs.length - 1];
     const lastSnakeObjDirection =
       this.steps[this.steps.length - this.snakeObjs.length];
@@ -197,24 +199,50 @@ class Game {
     }
   }
 
-  next() {
-    if (this.target.detectCollision(this.snakeObjs[0])) {
-      this.target.update();
-      this.addNewSnakeObj();
-    }
-    if (this.catchMove) {
-      this.steps.push(this.catchMove);
-    } else {
-      this.steps.push(this.getSnakeHeadDirection());
-    }
-    this.updateSnakeObjs();
-    this.clearSteps();
-    this.catchMove = null;
+  #clearSteps() {
+    this.steps.slice(
+      this.steps.length - this.snakeObjs.length,
+      this.steps.length - 1
+    );
+  }
 
+  update(timestamp) {
+    if (!this.start) return;
+    const deltaTime = timestamp - this.lastTime;
+    this.lastTime = timestamp;
+    this.timeToNext += deltaTime;
+
+    if (this.timeToNext > this.timeInterval) {
+      this.timeToNext = 0;
+
+      // Handle target
+      if (this.target.detectCollision(this.snakeObjs[0])) {
+        this.target.update();
+        this.#addNewSnakeObj();
+      }
+
+      // Update
+      this.steps.push(this.catchMove || this.getSnakeHeadDirection());
+      this.#updateSnakeObjs();
+
+      //Clean up
+      this.#clearSteps();
+      this.catchMove = null;
+    }
+  }
+
+  draw() {
     ctx.reset();
-    this.target.draw();
-    this.snakeObjs.forEach((snakeObj) => {
-      snakeObj.draw();
-    });
+    if (this.checkIfCollideSelf() || this.checkIfCollideWall()) {
+      ctx.fillText("Oops!", 10, 30);
+    } else {
+      if (!this.start) {
+        ctx.fillText("Press any key to start", 10, 30);
+      }
+      this.target.draw();
+      this.snakeObjs.forEach((snakeObj) => {
+        snakeObj.draw();
+      });
+    }
   }
 }

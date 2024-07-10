@@ -1,13 +1,10 @@
 const GAME = new Game();
 
-function main() {
-  GAME.next();
+function main(timestamp) {
+  GAME.update(timestamp);
+  GAME.draw();
 
-  if (!GAME.checkIfCollideWall() && !GAME.checkIfCollideSelf()) {
-    setTimeout(() => {
-      window.requestAnimationFrame(main);
-    }, 500 / SPEED);
-  }
+  window.requestAnimationFrame(main);
 }
 
-main();
+main(0);
