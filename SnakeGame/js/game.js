@@ -15,17 +15,18 @@ c.width = WIDTH;
 c.height = HEIGHT;
 
 class SnakeObj {
-  constructor(x, y) {
+  constructor(x, y, game) {
     this.x = x;
     this.y = y;
+    this.game = game;
   }
 
-  detectCollision(snakeHead) {
+  detectCollision() {
     return !(
-      snakeHead.x + OBJECT_SIZE <= this.x ||
-      snakeHead.x >= this.x + OBJECT_SIZE ||
-      snakeHead.y + OBJECT_SIZE <= this.y ||
-      snakeHead.y >= this.y + OBJECT_SIZE
+      this.game.snakeObjs[0].x + OBJECT_SIZE <= this.x ||
+      this.game.snakeObjs[0].x >= this.x + OBJECT_SIZE ||
+      this.game.snakeObjs[0].y + OBJECT_SIZE <= this.y ||
+      this.game.snakeObjs[0].y >= this.y + OBJECT_SIZE
     );
   }
 
@@ -71,16 +72,17 @@ class SnakeObj {
 }
 
 class Target {
-  constructor() {
+  constructor(game) {
+    this.game = game;
     this.update();
   }
 
-  detectCollision(snakeHead) {
+  detectCollision() {
     return !(
-      snakeHead.x + OBJECT_SIZE < this.x ||
-      snakeHead.x > this.x + OBJECT_SIZE ||
-      snakeHead.y + OBJECT_SIZE < this.y ||
-      snakeHead.y > this.y + OBJECT_SIZE
+      this.game.snakeObjs[0].x + OBJECT_SIZE < this.x ||
+      this.game.snakeObjs[0].x > this.x + OBJECT_SIZE ||
+      this.game.snakeObjs[0].y + OBJECT_SIZE < this.y ||
+      this.game.snakeObjs[0].y > this.y + OBJECT_SIZE
     );
   }
 
@@ -135,7 +137,7 @@ class Game {
 
   checkIfCollideSelf() {
     for (let i = 1; i < this.snakeObjs.length; i++) {
-      if (this.snakeObjs[i].detectCollision(this.snakeObjs[0])) return true;
+      if (this.snakeObjs[i].detectCollision()) return true;
     }
     return false;
   }
@@ -165,22 +167,22 @@ class Game {
     switch (lastSnakeObjDirection) {
       case "u":
         this.snakeObjs.push(
-          new SnakeObj(lastSnakeObj.x, lastSnakeObj.y + OBJECT_SIZE)
+          new SnakeObj(lastSnakeObj.x, lastSnakeObj.y + OBJECT_SIZE, this)
         );
         break;
       case "d":
         this.snakeObjs.push(
-          new SnakeObj(lastSnakeObj.x, lastSnakeObj.y - OBJECT_SIZE)
+          new SnakeObj(lastSnakeObj.x, lastSnakeObj.y - OBJECT_SIZE, this)
         );
         break;
       case "l":
         this.snakeObjs.push(
-          new SnakeObj(lastSnakeObj.x + OBJECT_SIZE, lastSnakeObj.y)
+          new SnakeObj(lastSnakeObj.x + OBJECT_SIZE, lastSnakeObj.y, this)
         );
         break;
       case "r":
         this.snakeObjs.push(
-          new SnakeObj(lastSnakeObj.x - OBJECT_SIZE, lastSnakeObj.y)
+          new SnakeObj(lastSnakeObj.x - OBJECT_SIZE, lastSnakeObj.y, this)
         );
         break;
       default:
@@ -214,7 +216,7 @@ class Game {
         this.reset();
       }
       // Handle target
-      if (this.target.detectCollision(this.snakeObjs[0])) {
+      if (this.target.detectCollision()) {
         this.score += 1;
         this.target.update();
         this.#addNewSnakeObj();
@@ -234,10 +236,10 @@ class Game {
     this.catchMove = null;
     this.steps = ["r", "r"];
     this.snakeObjs = [
-      new SnakeObj(WIDTH / 2 + OBJECT_SIZE, HEIGHT / 2),
-      new SnakeObj(WIDTH / 2, HEIGHT / 2),
+      new SnakeObj(WIDTH / 2 + OBJECT_SIZE, HEIGHT / 2, this),
+      new SnakeObj(WIDTH / 2, HEIGHT / 2, this),
     ];
-    this.target = new Target();
+    this.target = new Target(this);
     this.totalTime = 0;
     this.lastTime = 0;
     this.timeToNext = 0;
