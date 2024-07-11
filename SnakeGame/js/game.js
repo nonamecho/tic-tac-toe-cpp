@@ -15,18 +15,19 @@ c.width = WIDTH;
 c.height = HEIGHT;
 
 class SnakeObj {
-  constructor(x, y, game) {
+  constructor(x, y, snake) {
     this.x = x;
     this.y = y;
-    this.game = game;
+    this.snake = snake;
   }
 
   detectCollision() {
+    console.info(this.game);
     return !(
-      this.game.snakeObjs[0].x + OBJECT_SIZE <= this.x ||
-      this.game.snakeObjs[0].x >= this.x + OBJECT_SIZE ||
-      this.game.snakeObjs[0].y + OBJECT_SIZE <= this.y ||
-      this.game.snakeObjs[0].y >= this.y + OBJECT_SIZE
+      this.snake.snakeObjs[0].x + OBJECT_SIZE <= this.x ||
+      this.snake.snakeObjs[0].x >= this.x + OBJECT_SIZE ||
+      this.snake.snakeObjs[0].y + OBJECT_SIZE <= this.y ||
+      this.snake.snakeObjs[0].y >= this.y + OBJECT_SIZE
     );
   }
 
@@ -71,6 +72,75 @@ class SnakeObj {
   }
 }
 
+class Snake {
+  constructor(game) {
+    this.game = game;
+    this.snakeObjs = [
+      new SnakeObj(WIDTH / 2 + OBJECT_SIZE, HEIGHT / 2, this),
+      new SnakeObj(WIDTH / 2, HEIGHT / 2, this),
+    ];
+  }
+  detectSelfCollision() {
+    for (let i = 1; i < this.snakeObjs.length; i++) {
+      if (this.snakeObjs[i].detectCollision()) return true;
+    }
+    return false;
+  }
+
+  detectWallCollision() {
+    return (
+      this.snakeObjs[0].x <= 0 ||
+      this.snakeObjs[0].x >= WIDTH ||
+      this.snakeObjs[0].y <= 0 ||
+      this.snakeObjs[0].y >= HEIGHT
+    );
+  }
+
+  add() {
+    const lastSnakeObj = this.snakeObjs[this.snakeObjs.length - 1];
+    const lastSnakeObjDirection =
+      this.game.steps[this.game.steps.length - this.snakeObjs.length];
+
+    switch (lastSnakeObjDirection) {
+      case "u":
+        this.snakeObjs.push(
+          new SnakeObj(lastSnakeObj.x, lastSnakeObj.y + OBJECT_SIZE, this)
+        );
+        break;
+      case "d":
+        this.snakeObjs.push(
+          new SnakeObj(lastSnakeObj.x, lastSnakeObj.y - OBJECT_SIZE, this)
+        );
+        break;
+      case "l":
+        this.snakeObjs.push(
+          new SnakeObj(lastSnakeObj.x + OBJECT_SIZE, lastSnakeObj.y, this)
+        );
+        break;
+      case "r":
+        this.snakeObjs.push(
+          new SnakeObj(lastSnakeObj.x - OBJECT_SIZE, lastSnakeObj.y, this)
+        );
+        break;
+      default:
+        console.error("unsupportted move direction", lastSnakeObjDirection);
+    }
+  }
+
+  update() {
+    this.snakeObjs.forEach((snakeObj, i) => {
+      const direction = this.game.steps[this.game.steps.length - 1 - i];
+      snakeObj.update(direction);
+    });
+  }
+
+  draw() {
+    this.snakeObjs.forEach((snakeObj) => {
+      snakeObj.draw();
+    });
+  }
+}
+
 class Target {
   constructor(game) {
     this.game = game;
@@ -79,10 +149,10 @@ class Target {
 
   detectCollision() {
     return !(
-      this.game.snakeObjs[0].x + OBJECT_SIZE < this.x ||
-      this.game.snakeObjs[0].x > this.x + OBJECT_SIZE ||
-      this.game.snakeObjs[0].y + OBJECT_SIZE < this.y ||
-      this.game.snakeObjs[0].y > this.y + OBJECT_SIZE
+      this.game.snake.snakeObjs[0].x + OBJECT_SIZE < this.x ||
+      this.game.snake.snakeObjs[0].x > this.x + OBJECT_SIZE ||
+      this.game.snake.snakeObjs[0].y + OBJECT_SIZE < this.y ||
+      this.game.snake.snakeObjs[0].y > this.y + OBJECT_SIZE
     );
   }
 
@@ -135,64 +205,9 @@ class Game {
     return this.steps[this.steps.length - 1];
   }
 
-  checkIfCollideSelf() {
-    for (let i = 1; i < this.snakeObjs.length; i++) {
-      if (this.snakeObjs[i].detectCollision()) return true;
-    }
-    return false;
-  }
-
-  checkIfCollideWall() {
-    const snakeHead = this.snakeObjs[0];
-    return (
-      snakeHead.x <= 0 ||
-      snakeHead.x >= WIDTH ||
-      snakeHead.y <= 0 ||
-      snakeHead.y >= HEIGHT
-    );
-  }
-
-  #updateSnakeObjs() {
-    this.snakeObjs.forEach((snakeObj, i) => {
-      const direction = this.steps[this.steps.length - 1 - i];
-      snakeObj.update(direction);
-    });
-  }
-
-  #addNewSnakeObj() {
-    const lastSnakeObj = this.snakeObjs[this.snakeObjs.length - 1];
-    const lastSnakeObjDirection =
-      this.steps[this.steps.length - this.snakeObjs.length];
-
-    switch (lastSnakeObjDirection) {
-      case "u":
-        this.snakeObjs.push(
-          new SnakeObj(lastSnakeObj.x, lastSnakeObj.y + OBJECT_SIZE, this)
-        );
-        break;
-      case "d":
-        this.snakeObjs.push(
-          new SnakeObj(lastSnakeObj.x, lastSnakeObj.y - OBJECT_SIZE, this)
-        );
-        break;
-      case "l":
-        this.snakeObjs.push(
-          new SnakeObj(lastSnakeObj.x + OBJECT_SIZE, lastSnakeObj.y, this)
-        );
-        break;
-      case "r":
-        this.snakeObjs.push(
-          new SnakeObj(lastSnakeObj.x - OBJECT_SIZE, lastSnakeObj.y, this)
-        );
-        break;
-      default:
-        console.error("unsupportted move direction", lastSnakeObjDirection);
-    }
-  }
-
   #clearSteps() {
     this.steps.slice(
-      this.steps.length - this.snakeObjs.length,
+      this.steps.length - this.snake.snakeObjs.length,
       this.steps.length - 1
     );
   }
@@ -212,19 +227,22 @@ class Game {
       this.timeToNext = 0; // update for next time interval
 
       // handle game end
-      if (this.checkIfCollideSelf() || this.checkIfCollideWall()) {
+      if (
+        this.snake.detectSelfCollision() ||
+        this.snake.detectWallCollision()
+      ) {
         this.reset();
       }
       // Handle target
       if (this.target.detectCollision()) {
         this.score += 1;
         this.target.update();
-        this.#addNewSnakeObj();
+        this.snake.add();
       }
 
       // Update
       this.steps.push(this.catchMove || this.getSnakeHeadDirection());
-      this.#updateSnakeObjs();
+      this.snake.update();
 
       //Clean up
       this.#clearSteps();
@@ -235,10 +253,7 @@ class Game {
     this.start = false;
     this.catchMove = null;
     this.steps = ["r", "r"];
-    this.snakeObjs = [
-      new SnakeObj(WIDTH / 2 + OBJECT_SIZE, HEIGHT / 2, this),
-      new SnakeObj(WIDTH / 2, HEIGHT / 2, this),
-    ];
+    this.snake = new Snake(this);
     this.target = new Target(this);
     this.totalTime = 0;
     this.lastTime = 0;
@@ -257,8 +272,6 @@ class Game {
       ctx.fillText("Score: " + this.score, 10, 50);
     }
     this.target.draw();
-    this.snakeObjs.forEach((snakeObj) => {
-      snakeObj.draw();
-    });
+    this.snake.draw();
   }
 }
