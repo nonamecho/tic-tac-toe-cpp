@@ -186,14 +186,8 @@ class Board {
 
 class Game {
   constructor() {
-    this.start = true;
-    this.totalTime = 0;
-    this.lastTime = 0;
-    this.score = 0;
-    this.moveDowntimeToNext = 0;
     this.moveDowntimeInterval = 500;
-    this.board = new Board(this);
-    this.block = new Block(this);
+    this.reset();
 
     addEventListener("keydown", (e) => {
       switch (e.key) {
@@ -207,15 +201,32 @@ class Game {
           this.block.moveDown();
           break;
         case " ":
-          this.block.rotate();
+          if (this.state == "playing") {
+            this.block.rotate();
+          } else if (this.state == "idle") {
+            this.state = "playing";
+            music.play();
+          }
+          break;
+        case "Escape":
+          this.togglePause();
           break;
         default:
           console.log("absorb unsupported keydown event", e);
       }
     });
   }
+  reset() {
+    this.state = "idle";
+    this.totalTime = 0;
+    this.lastTime = 0;
+    this.score = 0;
+    this.moveDowntimeToNext = 0;
+    this.board = new Board(this);
+    this.block = new Block(this);
+  }
   update(timestamp) {
-    if (this.start) {
+    if (this.state == "playing") {
       // handle time
       const deltaTime = this.lastTime ? timestamp - this.lastTime : 0;
       this.totalTime += deltaTime;
@@ -245,26 +256,39 @@ class Game {
     const printWidth = ctx.measureText(print).width;
     ctx.fillText(print, COLUMN_SIZE * 20 - printWidth - 5, 30);
   }
-  drawGameOver() {
+  drawLanding() {
     ctx.font = "50px serif";
-    const print = "Game over!";
+    const print = "Press space to start!";
     const printWidth = ctx.measureText(print).width;
     ctx.fillText(print, (COLUMN_SIZE * 20) / 2 - printWidth / 2, 300);
   }
   draw() {
     ctx.reset();
-    if (this.start) {
+    if (this.state == "playing" || this.state == "pause") {
       this.block.draw();
       this.board.draw();
       this.drawHeadMask();
       this.drawHeadInfo();
     } else {
       this.drawHeadMask();
-      this.drawGameOver();
+      this.drawLanding();
+    }
+  }
+  togglePause() {
+    if (this.state == "idle") return;
+    if (this.state == "playing") {
+      this.state = "pause";
+      music.pause();
+    } else {
+      this.state = "playing";
+      music.play();
     }
   }
   end() {
-    this.start = false;
+    this.state = "idle";
+    music.pause();
+    music.currentTime = 0;
+    this.reset();
   }
 }
 
@@ -276,4 +300,6 @@ function main(timestamp) {
   window.requestAnimationFrame(main);
 }
 
-main(0);
+window.onload = function () {
+  main(0);
+};
