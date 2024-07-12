@@ -233,24 +233,34 @@ class Game {
     this.board.add();
     this.block = new Block(this);
   }
+  drawHeadMask() {
+    ctx.fillStyle = "#58C6A1";
+    ctx.fillRect(0, 0, COLUMN_SIZE * 20, 2 * 20);
+  }
+  drawHeadInfo() {
+    ctx.fillStyle = "black";
+    ctx.font = "16px serif";
+    ctx.fillText("Time: " + Math.floor(this.totalTime / 1000), 0, 30);
+    const print = "Score: " + this.score;
+    const printWidth = ctx.measureText(print).width;
+    ctx.fillText(print, COLUMN_SIZE * 20 - printWidth - 5, 30);
+  }
+  drawGameOver() {
+    ctx.font = "50px serif";
+    const print = "Game over!";
+    const printWidth = ctx.measureText(print).width;
+    ctx.fillText(print, (COLUMN_SIZE * 20) / 2 - printWidth / 2, 300);
+  }
   draw() {
     ctx.reset();
     if (this.start) {
       this.block.draw();
       this.board.draw();
-      ctx.fillStyle = "#58C6A1";
-      ctx.fillRect(0, 0, COLUMN_SIZE * 20, 2 * 20);
-      ctx.fillStyle = "black";
-      ctx.font = "16px serif";
-      ctx.fillText("Time: " + Math.floor(this.totalTime / 1000), 0, 30);
-      const print = "Score: " + this.score;
-      const printWidth = ctx.measureText(print).width;
-      ctx.fillText(print, COLUMN_SIZE * 20 - printWidth - 5, 30);
+      this.drawHeadMask();
+      this.drawHeadInfo();
     } else {
-      ctx.font = "50px serif";
-      const print = "Game over!";
-      const printWidth = ctx.measureText(print).width;
-      ctx.fillText(print, (COLUMN_SIZE * 20) / 2 - printWidth / 2, 200);
+      this.drawHeadMask();
+      this.drawGameOver();
     }
   }
   end() {
