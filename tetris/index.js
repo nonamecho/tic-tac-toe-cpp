@@ -67,15 +67,18 @@ class Block {
     this.column = Math.floor(COLUMN_SIZE / 2) - 1;
   }
   rotate() {
-    this.obj.shape = this.obj.shape[0].map((val, index) =>
+    const rotatedObjShape = this.obj.shape[0].map((val, index) =>
       this.obj.shape.map((row) => row[index]).reverse()
     );
+    if (!this.checkIfBlock(rotatedObjShape, this.row, this.column)) {
+      this.obj.shape = rotatedObjShape;
+    }
   }
-  checkIfBlock(row, column) {
-    for (let i = 0; i < this.obj.shape.length; i++) {
-      for (let j = 0; j < this.obj.shape[i].length; j++) {
+  checkIfBlock(shape, row, column) {
+    for (let i = 0; i < shape.length; i++) {
+      for (let j = 0; j < shape[i].length; j++) {
         if (
-          this.obj.shape[i][j] != 0 &&
+          shape[i][j] != 0 &&
           (row + i < 0 ||
             row + i > ROW_SIZE - 1 ||
             column + j < 0 ||
@@ -89,7 +92,7 @@ class Block {
     return false;
   }
   moveLeft() {
-    if (!this.checkIfBlock(this.row, this.column - 1)) {
+    if (!this.checkIfBlock(this.obj.shape, this.row, this.column - 1)) {
       this.column--;
       return true;
     }
@@ -97,7 +100,7 @@ class Block {
     return false;
   }
   moveRight() {
-    if (!this.checkIfBlock(this.row, this.column + 1)) {
+    if (!this.checkIfBlock(this.obj.shape, this.row, this.column + 1)) {
       this.column++;
       return true;
     }
@@ -105,7 +108,7 @@ class Block {
     return false;
   }
   moveDown() {
-    if (!this.checkIfBlock(this.row + 1, this.column)) {
+    if (!this.checkIfBlock(this.obj.shape, this.row + 1, this.column)) {
       this.row++;
       return true;
     }
@@ -235,7 +238,6 @@ class Game {
     if (this.start) {
       this.block.draw();
       this.board.draw();
-      console.info(ctx);
       ctx.fillStyle = "#58C6A1";
       ctx.fillRect(0, 0, COLUMN_SIZE * 20, 2 * 20);
       ctx.fillStyle = "black";
