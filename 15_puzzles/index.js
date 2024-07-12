@@ -1,4 +1,5 @@
 const BOARD_SIZE = 4;
+const OBJ_SIZE = 200;
 
 /**@type {HTMLCanvasElement} */
 const c = document.getElementById("myCanvas");
@@ -77,15 +78,20 @@ class Game {
             ctx.fillStyle = "#3FC2DA";
           }
 
-          ctx.fillRect(j * 200 + 10, i * 200 + 10, 180, 180);
+          ctx.fillRect(
+            j * OBJ_SIZE + 10,
+            i * OBJ_SIZE + 10,
+            OBJ_SIZE - 20,
+            OBJ_SIZE - 20
+          );
           ctx.fillStyle = "black";
           ctx.font = "50px serif";
           const print = this.board[i][j];
           const printWidth = ctx.measureText(print).width;
           ctx.fillText(
             this.board[i][j],
-            j * 200 + 100 - printWidth / 2,
-            i * 200 + 110
+            j * OBJ_SIZE + OBJ_SIZE / 2 - printWidth / 2,
+            i * OBJ_SIZE + OBJ_SIZE / 2 + 15
           );
         }
       }
@@ -95,7 +101,7 @@ class Game {
       ctx.font = "50px serif";
       const print = "You win!";
       const printWidth = ctx.measureText(print).width;
-      ctx.fillText(print, 400 - printWidth / 2, 200);
+      ctx.fillText(print, 400 - printWidth / 2, OBJ_SIZE);
     }
   }
 }
@@ -106,9 +112,38 @@ game.draw();
 
 c.addEventListener("mousedown", (e) => {
   let rect = c.getBoundingClientRect();
-  let x = Math.floor((e.clientY - rect.top) / 200);
-  let y = Math.floor((e.clientX - rect.left) / 200);
+  let x = Math.floor((e.clientY - rect.top) / OBJ_SIZE);
+  let y = Math.floor((e.clientX - rect.left) / OBJ_SIZE);
   if (game.pick(x, y)) {
     game.draw();
+  }
+});
+
+addEventListener("keydown", (e) => {
+  const x = game.emptyGrid.x;
+  const y = game.emptyGrid.y;
+  switch (e.key) {
+    case "ArrowLeft":
+      if (game.pick(x, y + 1)) {
+        game.draw();
+      }
+      break;
+    case "ArrowRight":
+      if (game.pick(x, y - 1)) {
+        game.draw();
+      }
+      break;
+    case "ArrowDown":
+      if (game.pick(x - 1, y)) {
+        game.draw();
+      }
+      break;
+    case "ArrowUp":
+      if (game.pick(x + 1, y)) {
+        game.draw();
+      }
+      break;
+    default:
+      console.log("absorb unsupported keydown event", e);
   }
 });
