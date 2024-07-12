@@ -62,7 +62,7 @@ class Block {
   constructor(game) {
     this.game = game;
     this.val = Math.floor((Math.random() * 70) / 10);
-    this.obj = BLOCK_OBJS[this.val];
+    this.obj = { ...BLOCK_OBJS[this.val] };
     this.row = 0;
     this.column = Math.floor(COLUMN_SIZE / 2) - 1;
   }
