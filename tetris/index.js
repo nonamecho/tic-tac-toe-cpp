@@ -76,7 +76,11 @@ class Block {
       for (let j = 0; j < this.obj.shape[i].length; j++) {
         if (
           this.obj.shape[i][j] != 0 &&
-          this.game.board.val[row + i][column + j] != -1
+          (row + i < 0 ||
+            row + i > ROW_SIZE - 1 ||
+            column + j < 0 ||
+            column + j > COLUMN_SIZE - 1 ||
+            this.game.board.val[row + i][column + j] != -1)
         ) {
           return true;
         }
@@ -85,30 +89,27 @@ class Block {
     return false;
   }
   moveLeft() {
-    if (this.column - 1 >= 0) {
-      if (!this.checkIfBlock(this.row, this.column - 1)) {
-        this.column--;
-        return true;
-      }
+    if (!this.checkIfBlock(this.row, this.column - 1)) {
+      this.column--;
+      return true;
     }
+
     return false;
   }
   moveRight() {
-    if (this.column + this.obj.shape[0].length - 1 < COLUMN_SIZE - 1) {
-      if (!this.checkIfBlock(this.row, this.column + 1)) {
-        this.column++;
-        return true;
-      }
+    if (!this.checkIfBlock(this.row, this.column + 1)) {
+      this.column++;
+      return true;
     }
+
     return false;
   }
   moveDown() {
-    if (this.row + this.obj.shape.length - 1 < ROW_SIZE - 1) {
-      if (!this.checkIfBlock(this.row + 1, this.column)) {
-        this.row++;
-        return true;
-      }
+    if (!this.checkIfBlock(this.row + 1, this.column)) {
+      this.row++;
+      return true;
     }
+
     this.game.add();
     return false;
   }
@@ -147,6 +148,9 @@ class Board {
     for (let i = 0; i < block.obj.shape.length; i++) {
       for (let j = 0; j < block.obj.shape[i].length; j++) {
         if (block.obj.shape[i][j]) {
+          if (block.row < 2) {
+            this.game.end();
+          }
           this.val[block.row + i][block.column + j] = block.val;
         }
       }
@@ -161,6 +165,7 @@ class Board {
           newRow.push(-1);
         }
         this.val = [newRow].concat(this.val);
+        this.game.score += 10;
       }
     }
   }
@@ -178,8 +183,10 @@ class Board {
 
 class Game {
   constructor() {
+    this.start = true;
     this.totalTime = 0;
     this.lastTime = 0;
+    this.score = 0;
     this.moveDowntimeToNext = 0;
     this.moveDowntimeInterval = 500;
     this.board = new Board(this);
@@ -205,17 +212,19 @@ class Game {
     });
   }
   update(timestamp) {
-    // handle time
-    const deltaTime = this.lastTime ? timestamp - this.lastTime : 0;
-    this.totalTime += deltaTime;
-    this.lastTime = timestamp;
-    this.moveDowntimeToNext += deltaTime;
-    // Only update when meet time interval
-    if (this.moveDowntimeToNext > this.moveDowntimeInterval) {
-      this.moveDowntimeToNext = 0;
-      this.block.moveDown();
+    if (this.start) {
+      // handle time
+      const deltaTime = this.lastTime ? timestamp - this.lastTime : 0;
+      this.totalTime += deltaTime;
+      this.lastTime = timestamp;
+      this.moveDowntimeToNext += deltaTime;
+      // Only update when meet time interval
+      if (this.moveDowntimeToNext > this.moveDowntimeInterval) {
+        this.moveDowntimeToNext = 0;
+        this.block.moveDown();
+      }
+      this.board.removeLine();
     }
-    this.board.removeLine();
   }
   add() {
     this.board.add();
@@ -223,8 +232,27 @@ class Game {
   }
   draw() {
     ctx.reset();
-    this.block.draw();
-    this.board.draw();
+    if (this.start) {
+      this.block.draw();
+      this.board.draw();
+      console.info(ctx);
+      ctx.fillStyle = "#58C6A1";
+      ctx.fillRect(0, 0, COLUMN_SIZE * 20, 2 * 20);
+      ctx.fillStyle = "black";
+      ctx.font = "16px serif";
+      ctx.fillText("Time: " + Math.floor(this.totalTime / 1000), 0, 30);
+      const print = "Score: " + this.score;
+      const printWidth = ctx.measureText(print).width;
+      ctx.fillText(print, COLUMN_SIZE * 20 - printWidth - 5, 30);
+    } else {
+      ctx.font = "50px serif";
+      const print = "Game over!";
+      const printWidth = ctx.measureText(print).width;
+      ctx.fillText(print, (COLUMN_SIZE * 20) / 2 - printWidth / 2, 200);
+    }
+  }
+  end() {
+    this.start = false;
   }
 }
 
