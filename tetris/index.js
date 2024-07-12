@@ -226,12 +226,14 @@ class Game {
     this.block = new Block(this);
   }
   update(timestamp) {
+    const deltaTime = this.lastTime ? timestamp - this.lastTime : 0;
+    this.lastTime = timestamp;
+
     if (this.state == "playing") {
       // handle time
-      const deltaTime = this.lastTime ? timestamp - this.lastTime : 0;
       this.totalTime += deltaTime;
-      this.lastTime = timestamp;
       this.moveDowntimeToNext += deltaTime;
+
       // Only update when meet time interval
       if (this.moveDowntimeToNext > this.moveDowntimeInterval) {
         this.moveDowntimeToNext = 0;
@@ -269,6 +271,11 @@ class Game {
       this.board.draw();
       this.drawHeadMask();
       this.drawHeadInfo();
+      if (this.state == "pause") {
+        ctx.fillStyle = "black";
+        ctx.globalAlpha = 0.5;
+        ctx.fillRect(0, 2 * 20, 400, 600);
+      }
     } else {
       this.drawHeadMask();
       this.drawLanding();
