@@ -66,20 +66,18 @@ class Block {
     this.row = 0;
     this.column = Math.floor(COLUMN_SIZE / 2) - 1;
   }
-  switch() {
+  rotate() {
     this.obj.shape = this.obj.shape[0].map((val, index) =>
       this.obj.shape.map((row) => row[index]).reverse()
     );
   }
   checkIfBlock(row, column) {
-    let blocked = false;
     for (let i = 0; i < this.obj.shape.length; i++) {
       for (let j = 0; j < this.obj.shape[i].length; j++) {
         if (
           this.obj.shape[i][j] != 0 &&
           this.game.board.val[row + i][column + j] != -1
         ) {
-          blocked = true;
           return true;
         }
       }
@@ -154,6 +152,18 @@ class Board {
       }
     }
   }
+  removeLine() {
+    for (let i = 0; i < this.val.length; i++) {
+      if (this.val[i].filter((v) => v != -1).length == COLUMN_SIZE) {
+        this.val.splice(i, 1);
+        const newRow = [];
+        for (let j = 0; j < COLUMN_SIZE; j++) {
+          newRow.push(-1);
+        }
+        this.val = [newRow].concat(this.val);
+      }
+    }
+  }
   draw() {
     for (let i = 0; i < this.val.length; i++) {
       for (let j = 0; j < this.val[i].length; j++) {
@@ -187,7 +197,7 @@ class Game {
           this.block.moveDown();
           break;
         case " ":
-          this.block.switch();
+          this.block.rotate();
           break;
         default:
           console.log("absorb unsupported keydown event", e);
@@ -205,6 +215,7 @@ class Game {
       this.moveDowntimeToNext = 0;
       this.block.moveDown();
     }
+    this.board.removeLine();
   }
   add() {
     this.board.add();
