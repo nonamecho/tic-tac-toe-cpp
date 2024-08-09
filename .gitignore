@@ -1,8 +1,8 @@
 .vscode
 .DS_Store
 
-TicTacToe_CPlusPlus/*.dSYM/
+*.dSYM/
 
-TicTacToe_CPlusPlus/Main
+Main
 
 
