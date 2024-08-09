@@ -1,3 +1,3 @@
-# mini_games
+# tic-tac-toe cpp
 
-I would like to develop some mini games to practice my programming skills and have fun
+Rewriting tic tac toe console game in cpp
